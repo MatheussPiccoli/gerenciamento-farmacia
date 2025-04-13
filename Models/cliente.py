@@ -1,8 +1,9 @@
 from pessoa import Pessoa
 
+
 class Cliente(Pessoa):
-    def __init__(self, nome, cpf, telefone):
-        super().__init__(nome, cpf)
+    def __init__(self, nome: str, cpf: str, id: int, telefone: int):
+        super().__init__(nome, cpf, id)
         self.__telefone = telefone
 
     @property
