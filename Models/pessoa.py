@@ -3,10 +3,9 @@ from abc import ABC, abstractmethod
 
 class Pessoa(ABC):
     @abstractmethod
-    def __init__(self, nome: str, cpf: str, id: int):
+    def __init__(self, nome: str, cpf: str):
         self.__nome = nome
         self.__cpf = cpf
-        self.__id = id
 
     @property
     def nome(self):
@@ -24,10 +23,3 @@ class Pessoa(ABC):
     def cpf(self, cpf):
         self.__cpf = cpf
 
-    @property
-    def id(self):
-        return self.__id
-
-    @id.setter
-    def id(self, id):
-        self.__id = id

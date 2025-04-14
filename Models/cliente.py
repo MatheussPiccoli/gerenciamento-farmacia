@@ -1,10 +1,13 @@
 from pessoa import Pessoa
 
-
 class Cliente(Pessoa):
-    def __init__(self, nome: str, cpf: str, id: int, telefone: int):
-        super().__init__(nome, cpf, id)
+
+    contador_id = 0
+
+    def __init__(self, nome: str, cpf: str, telefone = 0):
+        super().__init__(nome, cpf)
         self.__telefone = telefone
+        self.__id += Cliente.contador_id
 
     @property
     def telefone(self):
@@ -13,3 +16,11 @@ class Cliente(Pessoa):
     @telefone.setter
     def telefone(self, telefone):
         self.__telefone = telefone
+
+    @property
+    def id(self):
+        return self.__id
+
+    @id.setter
+    def id(self, id):
+        self.__id = id

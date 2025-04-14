@@ -5,14 +5,14 @@ from itemvenda import ItemVenda
 
 
 class Venda:
-    def __init__(self, cliente: Cliente, farmaceutico: Farmaceutico, data: date, itens, valor_total: float):
+    def __init__(self, cliente: Cliente, farmaceutico: Farmaceutico, data: date):
         if isinstance(cliente, Cliente): 
             self.__cliente = cliente
         if isinstance(farmaceutico, Farmaceutico): 
             self.__farmaceutico = farmaceutico
         self.__data = data
-        self.__itens = list(itens)
-        self.__valor_total = valor_total
+        self.__itens = []
+        self.__valor_total = 0.0
 
     @property
     def cliente(self):
@@ -46,8 +46,15 @@ class Venda:
     def itens(self, itens):
         self.__itens = itens
 
-    def adicionar_item(self, item: ItemVenda):
-        self.__itens.append(item)
+    def adicionar_item(self, item : ItemVenda):
+        if isinstance(item, ItemVenda):
+            self.__itens.append(item)
+    
+    def remover_item(self, item : ItemVenda):
+        if item in self.__itens:
+            self.__itens.remove(item)
+        else:
+            raise ValueError("Item não encontrado na venda.")
 
     def valor_total(self):
         self.__valor_total = sum(item.subtotal for item in self.__itens)
