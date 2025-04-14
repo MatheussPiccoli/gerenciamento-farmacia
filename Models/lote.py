@@ -16,8 +16,7 @@ class LoteMedicamento():
         if isinstance(lote, str):
             self.__lote = lote
 
-        if isinstance(validade, date):
-            self.__validade = validade
+        self.__validade = validade
 
         if isinstance(quantidade, int):
             self.__quantidade = quantidade

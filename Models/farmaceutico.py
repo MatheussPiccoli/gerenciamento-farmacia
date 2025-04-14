@@ -6,11 +6,12 @@ class Farmaceutico(Pessoa):
 
     contador_id = 0
 
-    def __init__(self, nome: str, cpf: str, salario: int):
-        super().__init__(nome, cpf)
+    def __init__(self, nome: str, cpf: str, id: int, salario: int):
+        super().__init__(nome, cpf, id)
         self.__salario = salario
         self.__vendas = []
-        self.__id += Farmaceutico.contador_id
+        self.__id = Farmaceutico.contador_id
+        Farmaceutico.contador_id += 1
 
     @property
     def salario(self):

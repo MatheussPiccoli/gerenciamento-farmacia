@@ -4,10 +4,11 @@ class Cliente(Pessoa):
 
     contador_id = 0
 
-    def __init__(self, nome: str, cpf: str, telefone = 0):
-        super().__init__(nome, cpf)
+    def __init__(self, nome: str, cpf: str, id: int, telefone = 0):
+        super().__init__(nome, cpf, id)
         self.__telefone = telefone
-        self.__id += Cliente.contador_id
+        self.__id = Cliente.contador_id
+        Cliente.contador_id += 1
 
     @property
     def telefone(self):

@@ -1,11 +1,11 @@
 from cliente import Cliente
-from farmaceutico import Farmaceutico
 from datetime import date
 from itemvenda import ItemVenda
 
 
 class Venda:
-    def __init__(self, cliente: Cliente, farmaceutico: Farmaceutico, data: date):
+    def __init__(self, cliente: Cliente, farmaceutico, data: date):
+        from farmaceutico import Farmaceutico
         if isinstance(cliente, Cliente): 
             self.__cliente = cliente
         if isinstance(farmaceutico, Farmaceutico): 
