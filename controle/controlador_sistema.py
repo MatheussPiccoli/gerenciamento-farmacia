@@ -1,4 +1,5 @@
 from limite.tela_sistema import TelaSistema
+from controle.controlador_farmaceutico import ControladorFarmaceutico
 from controle.controlador_cliente import Controladorclientes
 
 
@@ -6,6 +7,7 @@ class ControladorSistema:
 
     def __init__(self):
         self.__controlador_clientes = Controladorclientes(self)
+        self.__controlador_farmaceutico = ControladorFarmaceutico(self)
         self.__tela_sistema = TelaSistema()
 
     @property
@@ -17,13 +19,16 @@ class ControladorSistema:
 
     def cadastra_cliente(self):
         self.__controlador_clientes.abre_tela()
+    
+    def cadastra_farmaceutico(self):
+        self.__controlador_farmaceutico.abre_tela()
 
     def encerra_sistema(self):
         exit(0)
 
     def abre_tela(self):
-        lista_opcoes = {1: self.cadastra_cliente,
-                        0: self.encerra_sistema}
+        lista_opcoes = {1: self.cadastra_cliente, 2: self.cadastra_farmaceutico,
+                         0: self.encerra_sistema}
 
         while True:
             opcao_escolhida = self.__tela_sistema.tela_opcoes()

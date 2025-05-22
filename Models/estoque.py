@@ -1,5 +1,5 @@
-from lote import LoteMedicamento
-from medicamento import Medicamento
+from Models.lote import LoteMedicamento
+from Models.medicamento import Medicamento
 
 class Estoque():
     def __init__(self):

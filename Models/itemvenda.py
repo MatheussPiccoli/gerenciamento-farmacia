@@ -1,4 +1,4 @@
-from medicamento import Medicamento
+from Models.medicamento import Medicamento
 
 
 class ItemVenda:

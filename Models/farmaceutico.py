@@ -1,5 +1,5 @@
-from pessoa import Pessoa
-from venda import Venda
+from Models.pessoa import Pessoa
+from Models.venda import Venda
 
 
 class Farmaceutico(Pessoa):

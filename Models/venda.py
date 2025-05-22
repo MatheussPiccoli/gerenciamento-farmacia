@@ -1,6 +1,6 @@
-from cliente import Cliente
+from Models.cliente import Cliente
 from datetime import date
-from itemvenda import ItemVenda
+from Models.itemvenda import ItemVenda
 
 
 class Venda:

@@ -1,3 +1,5 @@
+from Models.cliente import Cliente
+
 
 class TelaCliente():
   def tela_opcoes(self):
@@ -13,17 +15,19 @@ class TelaCliente():
     return opcao
 
   def pega_dados_cliente(self):
-    print("-------- DADOS cliente ----------")
+    print("-------- Dados cliente ----------")
     nome = input("Nome: ")
-    telefone = input("Telefone: ")
     cpf = input("CPF: ")
+    telefone = input("Telefone: ")
+    id = Cliente.contador_id
 
-    return {"nome": nome, "telefone": telefone, "cpf": cpf}
+    return {"nome": nome, "cpf": cpf, "telefone": telefone, "id": id}
 
   def mostra_cliente(self, dados_cliente):
-    print("NOME DO cliente: ", dados_cliente["nome"])
-    print("FONE DO cliente: ", dados_cliente["telefone"])
-    print("CPF DO cliente: ", dados_cliente["cpf"])
+    print("Nome do cliente: ", dados_cliente["nome"])
+    print("CPF do cliente: ", dados_cliente["cpf"])
+    print("Telefone do cliente: ", dados_cliente["telefone"])
+    print("ID do cliente: ", dados_cliente["id"])
     print("\n")
 
   def seleciona_cliente(self):
