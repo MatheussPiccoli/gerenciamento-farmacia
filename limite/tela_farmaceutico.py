@@ -4,15 +4,14 @@ from Models.farmaceutico import Farmaceutico
 class TelaFarmaceutico():
   def tela_opcoes(self):
     print("-------- Farmaceutico ----------")
-    print("Escolha a opcao")
+    print("Escolha a opção")
     print("1 - Incluir farmaceutico")
     print("2 - Alterar farmaceutico")
     print("3 - Listar farmaceuticos")
     print("4 - Excluir farmaceutico")
-    print("5 - Registrar venda")
     print("0 - Retornar")
 
-    opcao = int(input("Escolha a opcao: "))
+    opcao = int(input("Escolha a opção: "))
     return opcao
 
   def pega_dados_farmaceutico(self):

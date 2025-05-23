@@ -4,14 +4,14 @@ from Models.cliente import Cliente
 class TelaCliente():
   def tela_opcoes(self):
     print("-------- clienteS ----------")
-    print("Escolha a opcao")
+    print("Escolha a opção")
     print("1 - Incluir cliente")
     print("2 - Alterar cliente")
     print("3 - Listar clientes")
     print("4 - Excluir cliente")
     print("0 - Retornar")
 
-    opcao = int(input("Escolha a opcao: "))
+    opcao = int(input("Escolha a opção: "))
     return opcao
 
   def pega_dados_cliente(self):

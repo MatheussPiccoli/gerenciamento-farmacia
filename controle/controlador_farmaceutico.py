@@ -1,5 +1,7 @@
 from limite.tela_farmaceutico import TelaFarmaceutico
 from Models.farmaceutico import Farmaceutico
+from controle.exceptions import FarmaceuticoNaoExistente
+
 
 class ControladorFarmaceutico():
     def __init__(self, controlador_sistema):
@@ -32,7 +34,7 @@ class ControladorFarmaceutico():
             farmaceutico.salario = novos_dados_farmaceutico["Salario"]
             self.lista_farmaceuticos()
         else:
-            self.__tela_farmaceutico.mostra_mensagem("ATENCAO: farmaceutico não existente")
+            raise FarmaceuticoNaoExistente()
 
     def lista_farmaceuticos(self):
         for farmaceutico in self.__farmaceuticos:
@@ -48,24 +50,14 @@ class ControladorFarmaceutico():
             self.__farmaceuticos.remove(farmaceutico)
             self.lista_farmaceuticos()
         else:
-            self.__tela_farmaceutico.mostra_mensagem("ATENCAO: farmaceutico não existente")
+            raise FarmaceuticoNaoExistente()
     
-    def registrar_venda(self):
-        self.lista_farmaceuticos()
-        cpf_farmaceutico = self.__tela_farmaceutico.seleciona_farmaceutico()
-        farmaceutico = self.pega_farmaceutico_por_cpf(cpf_farmaceutico)
-
-        if farmaceutico is not None:
-            farmaceutico.registrar_venda()
-        else:
-            self.__tela_farmaceutico.mostra_mensagem("ATENCAO: farmaceutico não existente")
-
     def retornar(self):
         self.__controlador_sistema.abre_tela()
 
     def abre_tela(self):
         lista_opcoes = {1: self.incluir_farmaceutico, 2: self.alterar_farmaceutico, 3: self.lista_farmaceuticos,
-                         4: self.excluir_farmaceutico, 5: self.registrar_venda, 0: self.retornar}
+                         4: self.excluir_farmaceutico, 0: self.retornar}
 
         continua = True
         while continua:

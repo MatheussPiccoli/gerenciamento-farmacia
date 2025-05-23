@@ -1,5 +1,7 @@
 from limite.tela_cliente import TelaCliente
 from Models.cliente import Cliente
+from controle.exceptions import ClienteNaoEncontrado
+
 
 class Controladorclientes():
 
@@ -33,7 +35,7 @@ class Controladorclientes():
       cliente.id = novos_dados_cliente["id"]
       self.lista_clientes()
     else:
-      self.__tela_cliente.mostra_mensagem("ATENCAO: cliente não existente")
+      raise ClienteNaoEncontrado()
 
   def lista_clientes(self):
     for cliente in self.__clientes:
@@ -49,7 +51,7 @@ class Controladorclientes():
       self.__clientes.remove(cliente)
       self.lista_clientes()
     else:
-      self.__tela_cliente.mostra_mensagem("ATENCAO: cliente não existente")
+      raise ClienteNaoEncontrado()
 
   def retornar(self):
     self.__controlador_sistema.abre_tela()

@@ -2,10 +2,15 @@ from Models.medicamento import Medicamento
 
 
 class ItemVenda:
-    def __init__(self, medicamento: Medicamento, quantidade: int):
+
+    contador_id = 0
+
+    def __init__(self, medicamento: Medicamento, quantidade: int, id: int):
         self.__medicamento = medicamento
         self.__quantidade = quantidade
         self.__subtotal = self.__quantidade * self.__medicamento.preco
+        self.__id = ItemVenda.contador_id
+        ItemVenda.contador_id += 1
 
     @property
     def medicamento(self):
