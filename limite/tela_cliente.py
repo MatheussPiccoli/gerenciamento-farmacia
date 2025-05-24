@@ -3,16 +3,23 @@ from Models.cliente import Cliente
 
 class TelaCliente():
   def tela_opcoes(self):
-    print("-------- clienteS ----------")
-    print("Escolha a opção")
-    print("1 - Incluir cliente")
-    print("2 - Alterar cliente")
-    print("3 - Listar clientes")
-    print("4 - Excluir cliente")
-    print("0 - Retornar")
+    while True:
+      try:
+        print("-------- clienteS ----------")
+        print("Escolha a opção")
+        print("1 - Incluir cliente")
+        print("2 - Alterar cliente")
+        print("3 - Listar clientes")
+        print("4 - Excluir cliente")
+        print("0 - Retornar")
 
-    opcao = int(input("Escolha a opção: "))
-    return opcao
+        opcao = int(input("Escolha a opção: "))
+        if opcao in [0, 1, 2, 3, 4]:
+          return opcao
+        else:
+          print("Opção Inválida. DIgite um número entre 0 e 4")
+      except ValueError:
+        print("Entrada inválida. Por favor, digite um número inteiro")
 
   def pega_dados_cliente(self):
     print("-------- Dados cliente ----------")

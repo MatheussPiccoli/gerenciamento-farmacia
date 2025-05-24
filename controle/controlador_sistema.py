@@ -3,6 +3,7 @@ from controle.controlador_farmaceutico import ControladorFarmaceutico
 from controle.controlador_cliente import Controladorclientes
 from controle.controlador_venda import ControladorVenda
 from controle.controlador_estoque import ControladorEstoque
+from controle.controlador_medicamento import ControladorMedicamento
 
 
 class ControladorSistema:
@@ -12,6 +13,7 @@ class ControladorSistema:
         self.__controlador_farmaceutico = ControladorFarmaceutico(self)
         self.__controlador_venda = ControladorVenda(self)
         self.__controlador_estoque = ControladorEstoque(self)
+        self.__controlador_medicamento = ControladorMedicamento(self)
         self.__tela_sistema = TelaSistema()
 
     @property
@@ -30,6 +32,10 @@ class ControladorSistema:
     def controlador_estoque(self):
         return self.__controlador_estoque
     
+    @property
+    def controlador_medicamento(self):
+        return self.__controlador_medicamento
+    
 
     def inicializa_sistema(self):
         self.abre_tela()
@@ -39,6 +45,9 @@ class ControladorSistema:
     
     def cadastra_farmaceutico(self):
         self.__controlador_farmaceutico.abre_tela()
+
+    def cadastra_medicamento(self):
+        self.__controlador_medicamento.abre_tela()
 
     def inicia_venda(self):
         self.__controlador_venda.abre_tela()
@@ -51,7 +60,7 @@ class ControladorSistema:
 
     def abre_tela(self):
         lista_opcoes = {1: self.cadastra_cliente, 2: self.cadastra_farmaceutico,
-                         3:self.inicia_venda, 4: self.abre_estoque,
+                         3:self.inicia_venda, 4: self.abre_estoque, 5: self.cadastra_medicamento,
                          0: self.encerra_sistema}
 
         while True:
