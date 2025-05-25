@@ -1,39 +1,56 @@
+
 from Models.lote import LoteMedicamento
 from Models.medicamento import Medicamento
+from controle.exceptions import EstoqueInsuficiente
+from datetime import date
 
-class Estoque():
+class Estoque:
     def __init__(self):
-        self.__lotes = []
+        self.lotes = [] 
 
-    def add_lote(self, lote : LoteMedicamento):
-        if isinstance(lote, LoteMedicamento):
-            self.__lotes.append(lote)
-
-    def baixar_estoque(self, medicamento : Medicamento, quantidade : int):
-            lotes_filtrados = []
-            for lote in self.__lotes:
-                mesmo_medicamento = lote.medicamento.nome == medicamento.nome
-                tem_estoque = lote.quantidade > 0
-
-                if mesmo_medicamento and tem_estoque:
-                    lotes_filtrados.append(lote)
-
-            lotes_validos = sorted(lotes_filtrados, key=lambda lote: lote.validade)
-            restante = quantidade
-            for lote in lotes_validos:
-                if lote.quantidade >= restante:
-                    lote.quantidade -= restante
-                    return
-                else:
-                    restante -= lote.quantidade
-                    lote.quantidade = 0
-            if restante > 0:
-                raise ValueError(f"Não há estoque suficiente para {medicamento.nome}.")
-
-    def consultar_estoque(self, medicamento : Medicamento):
-        for lote in self.__lotes:
-            if lote.medicamento == medicamento:
-                return lote.quantidade
-        return
+    def adicionar_lote(self, medicamento: Medicamento, lote: str, validade: date, quantidade: int):
         
+        for lote_existente in self.lotes:
+            mesmo_medicamento = lote_existente.medicamento.id == medicamento.id
+            mesmo_lote_identificador = lote_existente.lote == lote
+            mesma_validade = lote_existente.validade == validade
+            if mesmo_medicamento and mesmo_lote_identificador and mesma_validade:
+                lote_existente.quantidade += quantidade
+                return
 
+        novo_lote = LoteMedicamento(medicamento, lote, validade, quantidade)
+        self.lotes.append(novo_lote)
+
+    def abaixar_estoque(self, medicamento: Medicamento, quantidade: int):
+        lotes_validos = sorted(
+            [l for l in self.lotes if l.medicamento.id == medicamento.id and l.quantidade > 0],
+            key=lambda l: (l.validade, l.lote) 
+        )
+
+        restante = quantidade
+        for lote in lotes_validos:
+            if lote.quantidade >= restante:
+                lote.quantidade -= restante
+                if lote.quantidade == 0:
+                    self.lotes.remove(lote)
+                return
+            else:
+                restante -= lote.quantidade
+                lote.quantidade = 0
+                self.lotes.remove(lote)
+
+        if restante > 0:
+            raise EstoqueInsuficiente(f"Estoque insuficiente para o medicamento {medicamento.nome}.")
+
+    def consultar_estoque(self, medicamento: Medicamento):
+        total = sum(
+            lote.quantidade for lote in self.lotes if lote.medicamento.id == medicamento.id
+        )
+        return total if total > 0 else 0
+
+    def estoque_baixo(self, limite=5):
+        return [lote for lote in self.lotes if lote.quantidade < limite]
+
+    def lotes_vencidos(self):
+        hoje = date.today()
+        return [lote for lote in self.lotes if lote.validade < hoje]

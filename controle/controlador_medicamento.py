@@ -3,28 +3,45 @@ from Models.medicamento import Medicamento
 from controle.exceptions import MedicamentoNaoEncontrado
 
 
-class ControladorMedicamento():
+class ControladorMedicamento:
     def __init__(self, controlador_sistema):
-        self.__medicamentos = []
-        self.__tela_medicamento = TelaMedicamento()
         self.__controlador_sistema = controlador_sistema
+        self.__medicamentos = []
+        self.__tela_medicamento = TelaMedicamento() 
 
-    def seleciona_medicamento(self):
-        nome = self.__tela_medicamento.pede_nome_medicamento()
+    def pega_medicamento_por_nome(self, nome: str) -> Medicamento:
         medicamentos_encontrados = [
             m for m in self.__medicamentos if m.nome.lower() == nome.lower()
         ]
 
         if not medicamentos_encontrados:
-            raise MedicamentoNaoEncontrado()
+            raise MedicamentoNaoEncontrado(f"Medicamento com nome '{nome}' não encontrado.")
 
         elif len(medicamentos_encontrados) == 1:
             return medicamentos_encontrados[0]
 
         else:
-            self.__tela_medicamento.mostra_opcoes_medicamentos(medicamentos_encontrados)
-            opcao = self.__tela_medicamento.pede_opcao_medicamento(len(medicamentos_encontrados))
+            self.__tela_medicamento.mostra_opcoes_medicamentos_por_fabricante(medicamentos_encontrados)
+            
+            try:
+                opcao = self.__tela_medicamento.pede_opcao_selecao_multiplos(len(medicamentos_encontrados))
+            except ValueError:
+                raise MedicamentoNaoEncontrado("Seleção de medicamento cancelada ou inválida.")
+
+            if not (1 <= opcao <= len(medicamentos_encontrados)):
+                raise MedicamentoNaoEncontrado("Opção de medicamento inválida. Seleção cancelada.")
+            
             return medicamentos_encontrados[opcao - 1]
+
+    def seleciona_medicamento(self):
+        nome = self.__tela_medicamento.pede_nome_medicamento()
+        if not nome:
+            raise MedicamentoNaoEncontrado("Seleção de medicamento cancelada.")
+            
+        try:
+            return self.pega_medicamento_por_nome(nome)
+        except MedicamentoNaoEncontrado:
+            raise
 
     def incluir_medicamento(self):
         dados_medicamento = self.__tela_medicamento.pega_dados_medicamento()

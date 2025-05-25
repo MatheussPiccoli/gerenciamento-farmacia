@@ -23,5 +23,8 @@ class EstoqueInsuficiente(Exception):
         super().__init__("Estoque insuficiente")
 
 class ClienteNaoEncontrado(Exception):
-    def __init__(self):
-        super().__init__("Cliente não encontrado")
+    def __init__(self, message="Cliente não encontrado"): 
+        super().__init__(message) 
+
+class FarmaceuticoNaoEncontrado(Exception):
+    pass

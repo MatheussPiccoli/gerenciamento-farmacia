@@ -1,16 +1,13 @@
 from Models.pessoa import Pessoa
 from Models.venda import Venda
 
-
 class Farmaceutico(Pessoa):
-
     contador_id = 0
 
-    def __init__(self, nome: str, cpf: str, id: int, salario: int):
-        super().__init__(nome, cpf, id)
+    def __init__(self, nome: str, cpf: str, salario: float):
+        super().__init__(nome, cpf, Farmaceutico.contador_id)
         self.__salario = salario
         self.__vendas = []
-        self.__id = Farmaceutico.contador_id
         Farmaceutico.contador_id += 1
 
     @property
@@ -23,13 +20,12 @@ class Farmaceutico(Pessoa):
 
     @property
     def id(self):
-        return self.__id
+        return super().id
 
     @id.setter
     def id(self, id):
-        self.__id = id
+        super().id = id 
 
     def registrar_venda(self, venda: Venda):
         if venda not in self.__vendas and isinstance(venda, Venda):
             self.__vendas.append(venda)
-

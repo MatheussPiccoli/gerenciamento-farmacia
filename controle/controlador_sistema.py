@@ -4,6 +4,8 @@ from controle.controlador_cliente import Controladorclientes
 from controle.controlador_venda import ControladorVenda
 from controle.controlador_estoque import ControladorEstoque
 from controle.controlador_medicamento import ControladorMedicamento
+from controle.controlador_relatorios import RelatorioController
+from controle.controlador_lote import ControladorLoteMedicamento
 
 
 class ControladorSistema:
@@ -15,6 +17,8 @@ class ControladorSistema:
         self.__controlador_estoque = ControladorEstoque(self)
         self.__controlador_medicamento = ControladorMedicamento(self)
         self.__tela_sistema = TelaSistema()
+        self.__controlador_relatorios = RelatorioController(self)
+        self.__controlador_lote = ControladorLoteMedicamento(self)
 
     @property
     def controlador_cliente(self):
@@ -36,6 +40,13 @@ class ControladorSistema:
     def controlador_medicamento(self):
         return self.__controlador_medicamento
     
+    @property
+    def controlador_relatorios(self):
+        return self.__controlador_relatorios
+    
+    @property
+    def controlador_lote(self):
+        return self.__controlador_lote
 
     def inicializa_sistema(self):
         self.abre_tela()
@@ -55,13 +66,23 @@ class ControladorSistema:
     def abre_estoque(self):
         self.__controlador_estoque.abre_tela()
 
+    def relatorios(self):
+        self.__controlador_relatorios.abre_tela()
+
+    def cadastra_lote(self):
+        self.__controlador_lote.abre_tela()
+
     def encerra_sistema(self):
         exit(0)
 
     def abre_tela(self):
-        lista_opcoes = {1: self.cadastra_cliente, 2: self.cadastra_farmaceutico,
-                         3:self.inicia_venda, 4: self.abre_estoque, 5: self.cadastra_medicamento,
-                         0: self.encerra_sistema}
+        lista_opcoes = {1: self.cadastra_cliente, 
+                        2: self.cadastra_farmaceutico,
+                        3:self.inicia_venda, 
+                        4: self.abre_estoque, 
+                        5: self.cadastra_medicamento,
+                        6: self.cadastra_lote, 
+                        7: self.relatorios, 0: self.encerra_sistema}
 
         while True:
             opcao_escolhida = self.__tela_sistema.tela_opcoes()

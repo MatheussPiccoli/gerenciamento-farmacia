@@ -1,16 +1,19 @@
-from Models.medicamento import Medicamento
-
+from Models.medicamento import Medicamento 
 
 class ItemVenda:
+    contador_id = 0 
 
-    contador_id = 0
+    def __init__(self, medicamento: Medicamento, quantidade: int):
+        if not isinstance(medicamento, Medicamento):
+            raise TypeError("O argumento 'medicamento' deve ser uma instância de Medicamento.")
+        if not isinstance(quantidade, int) or quantidade <= 0:
+            raise ValueError("A 'quantidade' deve ser um número inteiro positivo.")
 
-    def __init__(self, medicamento: Medicamento, quantidade: int, id: int):
         self.__medicamento = medicamento
         self.__quantidade = quantidade
-        self.__subtotal = self.__quantidade * self.__medicamento.preco
-        self.__id = ItemVenda.contador_id
-        ItemVenda.contador_id += 1
+        self.__id = ItemVenda.contador_id 
+        ItemVenda.contador_id += 1 
+        self.calcular_subtotal() 
 
     @property
     def medicamento(self):
@@ -18,6 +21,8 @@ class ItemVenda:
 
     @medicamento.setter
     def medicamento(self, medicamento):
+        if not isinstance(medicamento, Medicamento):
+            raise TypeError("O argumento 'medicamento' deve ser uma instância de Medicamento.")
         self.__medicamento = medicamento
         self.calcular_subtotal()
 
@@ -27,6 +32,8 @@ class ItemVenda:
 
     @quantidade.setter
     def quantidade(self, quantidade):
+        if not isinstance(quantidade, int) or quantidade <= 0:
+            raise ValueError("A 'quantidade' deve ser um número inteiro positivo.")
         self.__quantidade = quantidade
         self.calcular_subtotal()
 
@@ -34,5 +41,9 @@ class ItemVenda:
     def subtotal(self):
         return self.__subtotal
     
+    @property
+    def id(self):
+        return self.__id
+
     def calcular_subtotal(self):
         self.__subtotal = self.__quantidade * self.__medicamento.preco

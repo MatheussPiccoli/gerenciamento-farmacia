@@ -1,42 +1,52 @@
-from Models.estoque import Estoque
+from datetime import datetime
 
+class TelaEstoque():
 
-class TelaEstoque:
     def tela_opcoes(self):
-        print("-------- Estoque ----------")
-        print("1 - Visualizar estoque")
-        print("2 - Atualizar estoque")
-        print("3 - Ver estoques baixos")
-        print("0 - Retornar")
+        while True:
+            try:
+                print("------ Estoque ------")
+                print("1 - Listar Estoque")
+                print("2 - Aumentar Estoque (Adicionar Lote)")
+                print("3 - Baixar Estoque")
+                print("4 - Verificar Estoque Baixo")
+                print("0 - Retornar")
+                opcao = int(input("Escolha a opção: "))
+                if opcao in [0, 1, 2, 3, 4]:
+                    return opcao
+                else:
+                    print("Opção inválida. Digite um número entre 0 e 4.")
+            except ValueError:
+                print("Opção inválida. Digite um número inteiro.")
 
-        opcao = int(input("Escolha a opção: "))
-        return opcao
-    
-    def update_estoque(self):
-        print("-------- Atualizar estoque --------")
-        print("1 - Aumentar")
-        print("2 - Baixar")
-        print("0 - Retornar")
+    def pega_dados_lote(self):
+        try:
+            lote_str = input("Número do Lote: ")
+            validade_str = input("Validade do lote (DD/MM/AAAA): ")
+            validade = datetime.strptime(validade_str, "%d/%m/%Y").date()
+            quantidade = int(input("Quantidade: "))
+            return {"lote": lote_str, "validade": validade, "quantidade": quantidade}
+        except ValueError:
+            self.mostra_mensagem("Dados do lote inválidos. Verifique o formato da validade e da quantidade.")
+            return None
 
-        opcao = int(input("Ecolha a opção: "))
+    def pega_quantidade_para_baixa(self):
+        try:
+            return int(input("Quantidade para baixar do estoque: "))
+        except ValueError:
+            self.mostra_mensagem("Quantidade inválida. Por favor, digite um número inteiro.")
+            return -1 
 
-    def pega_dados(self):
-        print("-------- Dados do produto --------")
-        nome = input("Nome do produto: ")
-        quantidade = int(input("Quantidade: "))
-        validade = input("Validade: ")
+    def mostra_estoque(self, lotes):
+        print("------ Estoque Atual ------")
+        if not lotes:
+            print("Nenhum lote no estoque.")
+            return
+        for lote_obj in lotes: 
+            print(f"Medicamento: {lote_obj.medicamento.nome} | Lote: {lote_obj.lote} | Validade: {lote_obj.validade} | Quantidade: {lote_obj.quantidade}")
 
-        return {"nome": nome, "quantidade": quantidade, "validade": validade}
-    
-    def mostra_estoque(self, dados_estoque):
-        print("Nome do produto: ", dados_estoque["nome"])
-        print("Quantidade do produto: ", dados_estoque["quantidade"])
-        print("Validade do produto: ", dados_estoque["validade"])
-        print("\n")
+    def mostra_lote(self, lote):
+        print(f"Lote → Medicamento: {lote.medicamento.nome} | Número do Lote: {lote.lote} | Validade: {lote.validade} | Quantidade: {lote.quantidade}")
 
-    def pouco_estoque(self, dados_estoque):
-        print("-------- Estoque baixo --------")
-        print("Nome do produto: ", dados_estoque["nome"])
-        print("Quantidade do produto: ", dados_estoque["quantidade"])
-        print("Validade do produto: ", dados_estoque["validade"])
-        print("\n")
+    def mostra_mensagem(self, msg):
+        print(msg)

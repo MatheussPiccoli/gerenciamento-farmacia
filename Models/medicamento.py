@@ -1,8 +1,16 @@
 class Medicamento():
+    contador_id = 0
+
     def __init__(self, nome : str, fabricante : str, preco : float):
         self.__nome = nome
         self.__fabricante = fabricante
         self.__preco = preco
+        self.__id = Medicamento.contador_id
+        Medicamento.contador_id += 1
+
+    @property
+    def id(self):
+        return self.__id
 
     @property
     def nome(self):
