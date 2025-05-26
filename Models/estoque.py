@@ -40,7 +40,7 @@ class Estoque:
                 self.__lotes.remove(lote)
 
         if restante > 0:
-            raise EstoqueInsuficiente(f"Estoque insuficiente para o medicamento {medicamento.nome}.")
+            raise EstoqueInsuficiente()
 
     def consultar_estoque(self, medicamento: Medicamento):
         total = sum(
@@ -67,3 +67,7 @@ class Estoque:
             if hoje <= lote.validade <= data_limite
         ]
         return proximos
+    
+    @property
+    def lotes(self):
+        return self.__lotes

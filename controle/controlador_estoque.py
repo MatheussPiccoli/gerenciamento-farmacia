@@ -94,6 +94,7 @@ class ControladorEstoque:
             self.__tela_estoque.mostra_mensagem("Estoque baixado com sucesso.")
         except EstoqueInsuficiente:
             self.__tela_estoque.mostra_mensagem("Estoque insuficiente para a quantidade solicitada.")
+            
         except ValueError:
             self.__tela_estoque.mostra_mensagem("Quantidade inválida.")
 
