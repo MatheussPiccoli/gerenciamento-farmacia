@@ -1,4 +1,3 @@
-from Models.farmaceutico import Farmaceutico
 
 class TelaFarmaceutico():
 
