@@ -5,6 +5,7 @@ from Models.venda import Venda
 from Models.itemvenda import ItemVenda
 from controle.exceptions import MedicamentoNaoEncontrado, VendaNaoExistente, EstoqueInsuficiente, ClienteNaoEncontrado, FarmaceuticoNaoEncontrado
 from datetime import date
+from controle.controlador_cliente import Controladorclientes
 
 
 class ControladorVenda:
@@ -13,7 +14,7 @@ class ControladorVenda:
         self.__tela_venda = TelaVenda()
         self.__tela_cliente = TelaCliente()
         self.__vendas = []
-
+        
     def registrar_venda(self):
         itens_venda = []
 
@@ -27,8 +28,8 @@ class ControladorVenda:
 
             try:
                 medicamento = self.__controlador_sistema.controlador_medicamento.pega_medicamento_por_nome(dados_item["nome"])
-            except MedicamentoNaoEncontrado as e:
-                self.__tela_venda.mostra_mensagem(e.args[0])
+            except MedicamentoNaoEncontrado as erro:
+                self.__tela_venda.mostra_mensagem(erro.args[0])
                 continue
 
             quantidade_desejada = dados_item["quantidade"]
@@ -70,14 +71,14 @@ class ControladorVenda:
             if not cliente:
                 raise ClienteNaoEncontrado("Cliente não encontrado com o CPF informado. Venda cancelada.")
 
-        except ClienteNaoEncontrado as e:
-            self.__tela_venda.mostra_mensagem(e.args[0])
+        except ClienteNaoEncontrado as erro:
+            self.__tela_venda.mostra_mensagem(erro.args[0])
             return
         except ValueError:
             self.__tela_venda.mostra_mensagem("CPF de cliente inválido. Venda cancelada.")
             return
-        except Exception as e:
-            self.__tela_venda.mostra_mensagem(f"Erro ao selecionar cliente: {e}. Venda cancelada.")
+        except Exception as erro:
+            self.__tela_venda.mostra_mensagem(f"Erro ao selecionar cliente: {erro}. Venda cancelada.")
             return
 
         try:
@@ -93,14 +94,14 @@ class ControladorVenda:
             if not farmaceutico:
                 raise FarmaceuticoNaoEncontrado("Farmacêutico não encontrado com o CPF informado. Venda cancelada.")
 
-        except FarmaceuticoNaoEncontrado as e:
-            self.__tela_venda.mostra_mensagem(e.args[0])
+        except FarmaceuticoNaoEncontrado as erro:
+            self.__tela_venda.mostra_mensagem(erro.args[0])
             return
         except ValueError:
             self.__tela_venda.mostra_mensagem("CPF de farmacêutico inválido. Venda cancelada.")
             return
         except Exception as e:
-            self.__tela_venda.mostra_mensagem(f"Erro ao selecionar farmacêutico: {e}. Venda cancelada.")
+            self.__tela_venda.mostra_mensagem(f"Erro ao selecionar farmacêutico: {erro}. Venda cancelada.")
             return
 
         nova_venda = Venda(cliente=cliente, farmaceutico=farmaceutico, data=date.today())
@@ -148,7 +149,7 @@ class ControladorVenda:
         venda = self.pega_venda_por_id(id_venda)
 
         if venda:
-            self.__tela_venda.mostra_mensagem("Funcionalidade de alteração de itens de venda não implementada. Alterando apenas cliente e farmacêutico.")
+            self.__tela_venda.mostra_mensagem("Selecione o novo cliente e farmacêutico para a venda.")
             
             try:
                 self.__controlador_sistema.controlador_cliente.lista_clientes()
@@ -201,6 +202,15 @@ class ControladorVenda:
 
     def retornar(self):
         self.__controlador_sistema.abre_tela()
+
+    def get_vendas(self):
+        return self.__vendas
+    
+    def get_vendas_por_periodo(self, data_inicio: date, data_fim: date) -> list[Venda]:
+        vendas_filtradas = [
+            venda for venda in self.__vendas if data_inicio <= venda.data <= data_fim
+        ]
+        return vendas_filtradas
 
     def abre_tela(self):
         opcoes = {

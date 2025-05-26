@@ -8,6 +8,15 @@ class ControladorFarmaceutico():
         self.__farmaceuticos = []
         self.__tela_farmaceutico = TelaFarmaceutico()
         self.__controlador_sistema = controlador_sistema
+        self.cria_farmaceuticos_iniciais()
+
+    def cria_farmaceuticos_iniciais(self):
+        Farmaceutico.contador_id = 0
+        farmaceutico1 = Farmaceutico("Dr. João Saúde", "12345678901", 3500.00)
+        farmaceutico2 = Farmaceutico("Dra. Maria Cura", "09876543210", 4000.00)
+        
+        self.__farmaceuticos.append(farmaceutico1)
+        self.__farmaceuticos.append(farmaceutico2)
     
     def pega_farmaceutico_por_cpf(self, cpf: str):
         for farmaceutico in self.__farmaceuticos:

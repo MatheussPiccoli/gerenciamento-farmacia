@@ -1,5 +1,4 @@
-# controle/controlador_estoque.py
-
+from datetime import date
 from limite.tela_estoque import TelaEstoque
 from Models.medicamento import Medicamento
 from Models.estoque import Estoque
@@ -11,6 +10,35 @@ class ControladorEstoque:
         self.__estoque = Estoque()
         self.__controlador_sistema = controlador_sistema
         self.__tela_estoque = TelaEstoque()
+
+    def cria_estoque_inicial(self):
+        medicamentos = self.__controlador_sistema.controlador_medicamento._ControladorMedicamento__medicamentos
+
+        if len(medicamentos) > 0:
+            paracetamol_generico = next((m for m in medicamentos if m.nome == "Paracetamol" and m.fabricante == "Genérico"), None)
+            ibuprofeno_ems = next((m for m in medicamentos if m.nome == "Ibuprofeno" and m.fabricante == "EMS"), None)
+            
+            if paracetamol_generico:
+                self.__estoque.adicionar_lote(
+                    medicamento=paracetamol_generico,
+                    lote="P12345",
+                    validade=date(2026, 12, 31), 
+                    quantidade=500
+                )
+                self.__estoque.adicionar_lote(
+                    medicamento=paracetamol_generico,
+                    lote="P67890",
+                    validade=date(2025, 6, 30), 
+                    quantidade=200
+                )
+            if ibuprofeno_ems:
+                self.__estoque.adicionar_lote(
+                    medicamento=ibuprofeno_ems,
+                    lote="I12345",
+                    validade=date(2027, 1, 15),
+                    quantidade=300
+                )
+            self.__tela_estoque.mostra_mensagem("Estoque inicial carregado.") 
 
     def listar_estoque(self):
         lotes = self.__estoque.lotes
@@ -91,6 +119,25 @@ class ControladorEstoque:
             
         self.__estoque.abaixar_estoque(medicamento, quantidade)
 
+    def lotes_vencidos(self):
+        lotes_vencidos = self.__estoque.lotes_vencidos()
+        if not lotes_vencidos:
+            self.__tela_estoque.mostra_mensagem("Nenhum lote vencido encontrado.")
+            return
+
+        self.__tela_estoque.mostra_mensagem("------ Lotes Vencidos ------")
+        for lote in lotes_vencidos:
+            self.__tela_estoque.mostra_lote(lote)
+
+    def lotes_proximos_vencimento(self):
+        lotes_proximos = self.__estoque.lotes_proximos_vencimento(dias_limite=30)
+        if not lotes_proximos:
+            self.__tela_estoque.mostra_mensagem("Nenhum lote próximo ao vencimento encontrado.")
+            return
+        self.__tela_estoque.mostra_mensagem("------ Lotes Próximos ao Vencimento ------")
+        for lote in lotes_proximos:
+            self.__tela_estoque.mostra_lote(lote)
+
     def retornar(self):
         self.__controlador_sistema.abre_tela()
 
@@ -100,6 +147,8 @@ class ControladorEstoque:
             2: self.aumentar_estoque,
             3: self.abaixar_estoque,
             4: self.estoque_baixo,
+            5: self.lotes_vencidos,
+            6: self.lotes_proximos_vencimento,
             0: self.retornar
         }
 

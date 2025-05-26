@@ -3,8 +3,8 @@ class DadoInvalidoException(Exception):
         super().__init__("Dado(s) inválido(s)")
 
 class MedicamentoNaoEncontrado(Exception):
-    def __init__(self):
-        super().__init__("Medicamento não encontrado no estoque")
+    def __init__(self, message="Medicamento não encontrado"): 
+        super().__init__(message) 
 
 class VendaNaoExistente(Exception):
     def __init__(self):

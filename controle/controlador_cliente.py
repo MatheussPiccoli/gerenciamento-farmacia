@@ -9,6 +9,17 @@ class Controladorclientes():
         self.__clientes = []
         self.__tela_cliente = TelaCliente()
         self.__controlador_sistema = controlador_sistema
+        self.cria_clientes_iniciais()
+
+    def cria_clientes_iniciais(self):
+        Cliente.contador_id = 0 
+        cliente1 = Cliente("Alice Silva", "11122233344", "48988887777")
+        cliente2 = Cliente("Bruno Costa", "55566677788", "48999990000")
+        cliente3 = Cliente("Carla Dias", "99988877766", "")
+
+        self.__clientes.append(cliente1)
+        self.__clientes.append(cliente2)
+        self.__clientes.append(cliente3)
 
     def pega_cliente_por_cpf(self, cpf: str):
         for cliente in self.__clientes:
@@ -75,6 +86,7 @@ class Controladorclientes():
         for cliente in self.__clientes:
             self.__tela_cliente.mostra_cliente({"nome": cliente.nome, "cpf": cliente.cpf,
                                                  "telefone": cliente.telefone, "id": cliente.id})
+            
 
     def excluir_cliente(self):
         self.lista_clientes()

@@ -8,6 +8,20 @@ class ControladorMedicamento:
         self.__controlador_sistema = controlador_sistema
         self.__medicamentos = []
         self.__tela_medicamento = TelaMedicamento() 
+        self.cria_medicamentos_iniciais()
+
+    def cria_medicamentos_iniciais(self):
+        Medicamento.contador_id = 0
+
+        medicamento1 = Medicamento("Paracetamol", "Genérico", 5.50)
+        medicamento2 = Medicamento("Ibuprofeno", "EMS", 12.00)
+        medicamento3 = Medicamento("Amoxicilina", "Neo Química", 25.00)
+        medicamento4 = Medicamento("Paracetamol", "EMS", 7.00)
+        
+        self.__medicamentos.append(medicamento1)
+        self.__medicamentos.append(medicamento2)
+        self.__medicamentos.append(medicamento3)
+        self.__medicamentos.append(medicamento4)
 
     def pega_medicamento_por_nome(self, nome: str) -> Medicamento:
         medicamentos_encontrados = [
@@ -21,10 +35,10 @@ class ControladorMedicamento:
             return medicamentos_encontrados[0]
 
         else:
-            self.__tela_medicamento.mostra_opcoes_medicamentos_por_fabricante(medicamentos_encontrados)
+            self.__tela_medicamento.mostra_opcoes_medicamentos(medicamentos_encontrados)
             
             try:
-                opcao = self.__tela_medicamento.pede_opcao_selecao_multiplos(len(medicamentos_encontrados))
+                opcao = self.__tela_medicamento.pede_opcao_medicamento(len(medicamentos_encontrados))
             except ValueError:
                 raise MedicamentoNaoEncontrado("Seleção de medicamento cancelada ou inválida.")
 
@@ -93,6 +107,9 @@ class ControladorMedicamento:
                 "fabricante": medicamento.fabricante,
                 "preco": medicamento.preco
             })
+
+    def get_medicamentos(self):
+        return self.__medicamentos
 
     def retornar(self):
         self.__controlador_sistema.abre_tela()

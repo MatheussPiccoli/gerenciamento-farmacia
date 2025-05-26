@@ -35,7 +35,7 @@ class TelaFarmaceutico():
             self.mostra_mensagem("Operação cancelada.")
             return None
 
-        return {"nome": nome, "cpf": cpf, "salario": salario} # Chaves em minúsculas
+        return {"nome": nome, "cpf": cpf, "salario": salario}
 
     def mostra_farmaceutico(self, dados_farmaceutico):
         print("Nome do farmacêutico: ", dados_farmaceutico["nome"])

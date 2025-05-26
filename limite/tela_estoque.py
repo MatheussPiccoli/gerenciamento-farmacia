@@ -10,12 +10,14 @@ class TelaEstoque():
                 print("2 - Aumentar Estoque (Adicionar Lote)")
                 print("3 - Baixar Estoque")
                 print("4 - Verificar Estoque Baixo")
+                print("5 - Listar Lotes Vencidos")
+                print("6 - Listar Lotes Próximos ao Vencimento")
                 print("0 - Retornar")
                 opcao = int(input("Escolha a opção: "))
-                if opcao in [0, 1, 2, 3, 4]:
+                if opcao in [0, 1, 2, 3, 4, 5, 6]:
                     return opcao
                 else:
-                    print("Opção inválida. Digite um número entre 0 e 4.")
+                    print("Opção inválida. Digite um número entre 0 e 6.")
             except ValueError:
                 print("Opção inválida. Digite um número inteiro.")
 
