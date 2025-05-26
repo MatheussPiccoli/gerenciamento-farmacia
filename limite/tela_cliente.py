@@ -1,4 +1,3 @@
-from Models.cliente import Cliente
 
 class TelaCliente():
     def tela_opcoes(self):
