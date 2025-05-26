@@ -85,8 +85,7 @@ class ControladorSistema:
                         3:self.inicia_venda, 
                         4: self.abre_estoque, 
                         5: self.cadastra_medicamento,
-                        6: self.cadastra_lote, 
-                        7: self.relatorios, 0: self.encerra_sistema}
+                        6: self.relatorios, 0: self.encerra_sistema}
 
         while True:
             opcao_escolhida = self.__tela_sistema.tela_opcoes()
