@@ -8,6 +8,10 @@ class Estoque:
     def __init__(self):
         self.__lotes = [] 
 
+    @property
+    def lotes(self):
+        return self.__lotes
+
     def adicionar_lote(self, medicamento: Medicamento, lote: str, validade: date, quantidade: int):
         
         for lote_existente in self.__lotes:
