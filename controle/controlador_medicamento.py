@@ -101,6 +101,8 @@ class ControladorMedicamento:
         if len(self.__medicamentos) == 0:
             self.__tela_medicamento.mostra_msg("Não há nenhum medicamento registrado no sistema")
             return
+        self.__tela_medicamento.mostra_msg("-------- Lista de Medicamentos --------")
+        self.__tela_medicamento.mostra_msg("\n")
         for medicamento in self.__medicamentos:
             self.__tela_medicamento.mostra_medicamento({
                 "nome": medicamento.nome,

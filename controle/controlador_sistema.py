@@ -5,7 +5,6 @@ from controle.controlador_venda import ControladorVenda
 from controle.controlador_estoque import ControladorEstoque
 from controle.controlador_medicamento import ControladorMedicamento
 from controle.controlador_relatorios import RelatorioController
-from controle.controlador_lote import ControladorLoteMedicamento
 
 
 class ControladorSistema:
@@ -17,7 +16,6 @@ class ControladorSistema:
         self.__controlador_medicamento = ControladorMedicamento(self)
         self.__tela_sistema = TelaSistema()
         self.__controlador_relatorios = RelatorioController(self)
-        self.__controlador_lote = ControladorLoteMedicamento(self)
         self.__controlador_venda = ControladorVenda(self)
         self.carrega_dados_iniciais_sistema()
 
@@ -48,9 +46,6 @@ class ControladorSistema:
     def controlador_relatorios(self):
         return self.__controlador_relatorios
     
-    @property
-    def controlador_lote(self):
-        return self.__controlador_lote
 
     def inicializa_sistema(self):
         self.abre_tela()
