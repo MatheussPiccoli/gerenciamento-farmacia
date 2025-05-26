@@ -1,0 +1,21 @@
+# Arquivos de cache do Python
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+
+# Ambientes virtuais
+venv/
+.venv/
+
+# Editores e IDEs
+.vscode/
+.idea/
+
+# Logs e arquivos de dados temporários
+*.log
+*.sqlite3
+db.sqlite3
+
+# Outros
+.DS_Store
