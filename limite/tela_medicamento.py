@@ -1,70 +1,125 @@
+import PySimpleGUI as sg
+
 class TelaMedicamento():
     def tela_opcoes(self):
+        layout = [
+            [sg.Text('-------- Medicamentos --------', font=('Any', 16))],
+            [sg.Button('1 - Registrar Medicamento', key='1')],
+            [sg.Button('2 - Alterar ou Excluir Medicamento', key='2')],
+            [sg.Button('3 - Listar Medicamentos', key='3')],
+            [sg.Button('0 - Retornar', key='0')]
+        ]
+        window = sg.Window('Menu Medicamentos', layout)
+        opcao = None
         while True:
-            try:
-                print("-------- Medicamentos --------")
-                print("1 - Registrar Medicamento")
-                print("2 - Alterar ou Excluir Medicamento")
-                print("3 - Listar Medicamentos")
-                print("0 - Retornar")
-                opcao = int(input("Escolha uma opção: "))
-                if opcao in [0, 1, 2, 3]:
-                    return opcao
-                else:
-                    print("Opção inválida. Digite um número entre 0 e 3.")
-            except ValueError:
-                print("Entrada inválida. Por favor, digite um número inteiro.")
+            event, _ = window.read()
+            if event in ['0', sg.WIN_CLOSED]:
+                opcao = 0
+                break
+            elif event in ['1', '2', '3']:
+                opcao = int(event)
+                break
+        window.close()
+        return opcao
 
     def pega_dados_medicamento(self):
-        print("-------- Dados Medicamento --------")
-        nome = input("Nome: ")
-        fabricante = input("Fabricante: ")
-
+        layout = [
+            [sg.Text('-------- Dados Medicamento --------', font=('Any', 14))],
+            [sg.Text('Nome:'), sg.Input(key='nome')],
+            [sg.Text('Fabricante:'), sg.Input(key='fabricante')],
+            [sg.Text('Preço:'), sg.Input(key='preco')],
+            [sg.Button('OK'), sg.Button('Cancelar')]
+        ]
+        window = sg.Window('Cadastro de Medicamento', layout)
         while True:
+            event, values = window.read()
+            if event in (sg.WIN_CLOSED, 'Cancelar'):
+                window.close()
+                return None
             try:
-                preco = float(input("Preço (0 para cancelar): "))
+                preco = float(values['preco'])
                 if preco == 0:
-                    return None 
-                return {"nome": nome, "fabricante": fabricante, "preco": preco}
-            except ValueError:
-                print("Preço inválido. Por favor, digite um número real ou cancele a operação ('0' para cancelar).")
-
+                    window.close()
+                    return None
+                dados = {"nome": values['nome'], "fabricante": values['fabricante'], "preco": preco}
+                window.close()
+                return dados
+            except (ValueError, TypeError):
+                sg.popup('Preço inválido. Por favor, digite um número real ou cancele a operação (0 para cancelar).')
 
     def mostra_medicamento(self, dados_medicamento):
-        print("Nome: ", dados_medicamento["nome"])
-        print("Fabricante: ", dados_medicamento["fabricante"])
-        print("Preço: ", dados_medicamento["preco"])
-        print("\n")
+        msg = f"Nome: {dados_medicamento['nome']}\nFabricante: {dados_medicamento['fabricante']}\nPreço: {dados_medicamento['preco']}"
+        sg.popup(msg, title='Medicamento')
 
     def pede_nome_medicamento(self):
-        return input("Digite o nome do medicamento: ")
+        layout = [
+            [sg.Text('Digite o nome do medicamento:')],
+            [sg.Input(key='nome')],
+            [sg.Button('OK')]
+        ]
+        window = sg.Window('Buscar Medicamento', layout)
+        event, values = window.read()
+        window.close()
+        return values['nome'] if event == 'OK' else None
 
     def mostra_opcoes_medicamentos(self, lista_medicamentos):
-        print("Vários medicamentos encontrados com esse nome:")
-        for idx, med in enumerate(lista_medicamentos, start=1):
-            print(f"{idx} - Fabricante: {med.fabricante}")
+        opcoes = [f"{idx+1} - Fabricante: {med.fabricante}" for idx, med in enumerate(lista_medicamentos)]
+        sg.popup("Vários medicamentos encontrados com esse nome:\n" + "\n".join(opcoes), title='Escolha Medicamento')
 
     def pede_opcao_medicamento(self, total_opcoes):
+        layout = [
+            [sg.Text(f'Digite o número do medicamento desejado (1 a {total_opcoes}):')],
+            [sg.Input(key='opcao')],
+            [sg.Button('OK')]
+        ]
+        window = sg.Window('Escolher Medicamento', layout)
         while True:
+            event, values = window.read()
+            if event == sg.WIN_CLOSED:
+                window.close()
+                return None
             try:
-                opcao = int(input("Digite o número do medicamento desejado: "))
+                opcao = int(values['opcao'])
                 if 1 <= opcao <= total_opcoes:
+                    window.close()
                     return opcao
                 else:
-                    print("Número fora do intervalo.")
-            except ValueError:
-                print("Entrada inválida. Digite um número inteiro.")
+                    sg.popup('Número fora do intervalo.')
+            except (ValueError, TypeError):
+                sg.popup('Entrada inválida. Digite um número inteiro.')
 
     def mostra_opcoes_de_acao(self):
-        print("O que deseja fazer com o medicamento selecionado?")
-        print("1 - Alterar medicamento")
-        print("2 - Excluir medicamento")
-        print("0 - Cancelar")
-        try:
-            return int(input("Escolha a opção: "))
-        except ValueError:
-            print("Entrada inválida.")
-            return -1
+        layout = [
+            [sg.Text('O que deseja fazer com o medicamento selecionado?')],
+            [sg.Button('1 - Alterar medicamento', key='1')],
+            [sg.Button('2 - Excluir medicamento', key='2')],
+            [sg.Button('0 - Cancelar', key='0')]
+        ]
+        window = sg.Window('Ação Medicamento', layout)
+        while True:
+            event, _ = window.read()
+            if event in ['0', sg.WIN_CLOSED]:
+                window.close()
+                return 0
+            elif event in ['1', '2']:
+                window.close()
+                return int(event)
 
     def mostra_msg(self, msg):
-        print(msg)
+        sg.popup(msg)
+
+    def mostra_lista_medicamentos(self, lista_medicamentos):
+        if not lista_medicamentos:
+            sg.popup('Nenhum medicamento cadastrado.')
+            return
+        linhas = []
+        for med in lista_medicamentos:
+            linhas.append(f"Nome: {med.nome} | Fabricante: {med.fabricante} | Preço: {med.preco}")
+        layout = [
+            [sg.Text('Lista de Medicamentos:')],
+            [sg.Multiline('\n'.join(linhas), size=(60, min(20, len(linhas))), disabled=True)],
+            [sg.Button('OK')]
+        ]
+        window = sg.Window('Medicamentos Cadastrados', layout)
+        window.read()
+        window.close()

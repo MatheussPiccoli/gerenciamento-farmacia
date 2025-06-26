@@ -42,7 +42,7 @@ class ControladorMedicamento:
             except ValueError:
                 raise MedicamentoNaoEncontrado("Seleção de medicamento cancelada ou inválida.")
 
-            if not (1 <= opcao <= len(medicamentos_encontrados)):
+            if opcao is None or not (1 <= opcao <= len(medicamentos_encontrados)):
                 raise MedicamentoNaoEncontrado("Opção de medicamento inválida. Seleção cancelada.")
             
             return medicamentos_encontrados[opcao - 1]
@@ -101,14 +101,7 @@ class ControladorMedicamento:
         if len(self.__medicamentos) == 0:
             self.__tela_medicamento.mostra_msg("Não há nenhum medicamento registrado no sistema")
             return
-        self.__tela_medicamento.mostra_msg("-------- Lista de Medicamentos --------")
-        self.__tela_medicamento.mostra_msg("\n")
-        for medicamento in self.__medicamentos:
-            self.__tela_medicamento.mostra_medicamento({
-                "nome": medicamento.nome,
-                "fabricante": medicamento.fabricante,
-                "preco": medicamento.preco
-            })
+        self.__tela_medicamento.mostra_lista_medicamentos(self.__medicamentos)
 
     def get_medicamentos(self):
         return self.__medicamentos
