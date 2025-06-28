@@ -40,7 +40,6 @@ class TelaEstoque():
             return -1 
 
     def mostra_estoque(self, lotes):
-        print("------ Estoque Atual ------")
         if not lotes:
             print("Nenhum lote no estoque.")
             return
