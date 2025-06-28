@@ -143,7 +143,7 @@ class ControladorEstoque:
         self.__controlador_sistema.abre_tela()
 
     def abre_tela(self):
-        opcoes = {
+        lista_opcoes = {
             1: self.listar_estoque,
             2: self.aumentar_estoque,
             3: self.abaixar_estoque,
@@ -155,13 +155,5 @@ class ControladorEstoque:
 
         while True:
             opcao = self.__tela_estoque.tela_opcoes()
-            if opcao == -1: 
-                continue
-            
-            funcao = opcoes.get(opcao)
-            if funcao:
-                funcao()
-            elif opcao == 0:
-                break
-            else:
-                self.__tela_estoque.mostra_mensagem("Opção inválida. Por favor, escolha uma das opções acima.")
+            funcao_escolhida = lista_opcoes[opcao]
+            funcao_escolhida()

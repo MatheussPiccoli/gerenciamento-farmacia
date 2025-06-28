@@ -1,53 +1,85 @@
+import PySimpleGUI as sg
 from datetime import datetime
 
 class TelaEstoque():
 
     def tela_opcoes(self):
+        layout = [
+                [sg.Text("------ Estoque ------", font=('Any', 16))],
+                [sg.Button("1 - Listar Estoque", key='1')],
+                [sg.Button("2 - Aumentar Estoque (Adicionar Lote)", key='2')],
+                [sg.Button("3 - Baixar Estoque", key='3')],
+                [sg.Button("4 - Verificar Estoque Baixo", key='4')],
+                [sg.Button("5 - Listar Lotes Vencidos", key='5')],
+                [sg.Button("6 - Listar Lotes Próximos ao Vencimento", key='6')],
+                [sg.Button("0 - Retornar", key='0')],
+        ]
+        window = sg.Window('Menu Estoque', layout)
+        opcao = None
         while True:
-            try:
-                print("------ Estoque ------")
-                print("1 - Listar Estoque")
-                print("2 - Aumentar Estoque (Adicionar Lote)")
-                print("3 - Baixar Estoque")
-                print("4 - Verificar Estoque Baixo")
-                print("5 - Listar Lotes Vencidos")
-                print("6 - Listar Lotes Próximos ao Vencimento")
-                print("0 - Retornar")
-                opcao = int(input("Escolha a opção: "))
-                if opcao in [0, 1, 2, 3, 4, 5, 6]:
-                    return opcao
-                else:
-                    print("Opção inválida. Digite um número entre 0 e 6.")
-            except ValueError:
-                print("Opção inválida. Digite um número inteiro.")
-
+            event, _ = window.read()
+            if event in ['0', sg.WIN_CLOSED]:
+                opcao = 0
+                break
+            elif event in ['1', '2', '3', '4', '5', '6']:
+                opcao = int(event)
+                break
+        window.close()
+        return opcao
+    
     def pega_dados_lote(self):
-        try:
-            lote_str = input("Número do Lote: ")
-            validade_str = input("Validade do lote (DD/MM/AAAA): ")
-            validade = datetime.strptime(validade_str, "%d/%m/%Y").date()
-            quantidade = int(input("Quantidade: "))
-            return {"lote": lote_str, "validade": validade, "quantidade": quantidade}
-        except ValueError:
-            self.mostra_mensagem("Dados do lote inválidos. Verifique o formato da validade e da quantidade.")
-            return None
+        layout =[
+            [sg.Text("------ Dados do Lote ------", font=('Any', 14))],
+            [sg.Text("Número do Lote: "), sg.Input(key='lote_str')],
+            [sg.Text("Validade do lote (DD/MM/AAAA): "), sg.Input(key='validade')],
+            [sg.Text("Quantidade: "), sg.Input(key='quantidade')],
+            [sg.Button("OK"), sg.Button("Cancelar")]
+        ]
+        window = sg.Window('Cadastro de Lote', layout)
+        while True:
+            event, values = window.read()
+            if event in (sg.WIN_CLOSED, 'Cancelar'):
+                window.close()
+                return None
+            try:
+                lote = values['lote_str']
+                validade_str = values['validade']
+                validade = datetime.strptime(validade_str, "%d/%m/%Y").date()
+                quantidade = int(values['quantidade'])
+                if quantidade <= 0:
+                    sg.popup('Quantidade deve ser um número inteiro positivo.')
+                    continue
+                window.close()
+                return {"lote": lote, "validade": validade, "quantidade": quantidade}
+            except (ValueError, TypeError):
+                sg.popup('Dados inválidos. Por favor, verifique os campos e tente novamente.')
 
     def pega_quantidade_para_baixa(self):
-        try:
-            return int(input("Quantidade para baixar do estoque: "))
-        except ValueError:
-            self.mostra_mensagem("Quantidade inválida. Por favor, digite um número inteiro.")
-            return -1 
+        sg.popup('Informe a quantidade a ser baixada do estoque:')
+        layout = [
+            [sg.Text("Quantidade a ser baixada:")],
+            [sg.Input(key='quantidade')],
+            [sg.Button("OK"), sg.Button("Cancelar")]
+        ]
+        window = sg.Window('Baixa de Estoque', layout)
+        event, values = window.read()
+        window.close()
+        return int(values['quantidade']) if event == 'OK' else None 
 
     def mostra_estoque(self, lotes):
         if not lotes:
-            print("Nenhum lote no estoque.")
+            sg.popup('Nenhum lote cadastrado no estoque.')
             return
-        for lote_obj in lotes: 
-            print(f"Medicamento: {lote_obj.medicamento.nome} | Lote: {lote_obj.lote} | Validade: {lote_obj.validade} | Quantidade: {lote_obj.quantidade}")
-
+        linhas = []
+        for lote in lotes:
+            linhas.append(f"Medicamento: {lote.medicamento.nome} | Lote: {lote.lote} | Validade: {lote.validade} | Quantidade: {lote.quantidade}")
+        window = sg.Window('Estoque', [[sg.Text('\n'.join(linhas))]])
+        window.read()
+        window.close()
+    
     def mostra_lote(self, lote):
-        print(f"Lote → Medicamento: {lote.medicamento.nome} | Número do Lote: {lote.lote} | Validade: {lote.validade} | Quantidade: {lote.quantidade}")
+        msg = f"Medicamento: {lote.medicamento.nome}\nLote: {lote.lote}\nValidade: {lote.validade}\nQuantidade: {lote.quantidade}"
+        sg.popup(msg, title='Lote')
 
     def mostra_mensagem(self, msg):
         print(msg)
