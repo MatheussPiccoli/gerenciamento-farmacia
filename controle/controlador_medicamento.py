@@ -1,12 +1,13 @@
 from limite.tela_medicamento import TelaMedicamento
 from Models.medicamento import Medicamento
 from controle.exceptions import MedicamentoNaoEncontrado
+from DAOs.medicamento_dao import MedicamentoDAO
 
 
 class ControladorMedicamento:
     def __init__(self, controlador_sistema):
         self.__controlador_sistema = controlador_sistema
-        self.__medicamentos = []
+        self.__medicamentos_DAO = MedicamentoDAO()
         self.__tela_medicamento = TelaMedicamento() 
         self.cria_medicamentos_iniciais()
 
@@ -18,14 +19,17 @@ class ControladorMedicamento:
         medicamento3 = Medicamento("Amoxicilina", "Neo Química", 25.00)
         medicamento4 = Medicamento("Paracetamol", "EMS", 7.00)
         
-        self.__medicamentos.append(medicamento1)
-        self.__medicamentos.append(medicamento2)
-        self.__medicamentos.append(medicamento3)
-        self.__medicamentos.append(medicamento4)
+        self.__medicamentos_DAO.add(medicamento1)
+        self.__medicamentos_DAO.add(medicamento2)
+        self.__medicamentos_DAO.add(medicamento3)
+        self.__medicamentos_DAO.add(medicamento4)
+
+    def get_all_medicamentos(self):
+        return list(self.__medicamentos_DAO.get_all())
 
     def pega_medicamento_por_nome(self, nome: str) -> Medicamento:
         medicamentos_encontrados = [
-            m for m in self.__medicamentos if m.nome.lower() == nome.lower()
+            m for m in self.__medicamentos_DAO.get_all() if m.nome.lower() == nome.lower()
         ]
 
         if not medicamentos_encontrados:
@@ -55,17 +59,25 @@ class ControladorMedicamento:
         try:
             return self.pega_medicamento_por_nome(nome)
         except MedicamentoNaoEncontrado:
-            raise
+            raise MedicamentoNaoEncontrado("Medicamento não encontrado com o nome fornecido.")
 
     def incluir_medicamento(self):
         dados_medicamento = self.__tela_medicamento.pega_dados_medicamento()
         if dados_medicamento is None:
             self.__tela_medicamento.mostra_msg("Operação cancelada.")
             return
+        
+        try:
+            self.pega_medicamento_por_nome(dados_medicamento["nome"])
+            self.__tela_medicamento.mostra_msg("Medicamento já cadastrado.")
+            return
+        except MedicamentoNaoEncontrado:
+           pass
+            
         medicamento = Medicamento(dados_medicamento["nome"],
                                   dados_medicamento["fabricante"],
                                   dados_medicamento["preco"])
-        self.__medicamentos.append(medicamento)
+        self.__medicamentos_DAO.add(medicamento)
         self.__tela_medicamento.mostra_msg("Medicamento registrado com sucesso.")
 
     def alterar_ou_excluir_medicamento(self):
@@ -85,7 +97,7 @@ class ControladorMedicamento:
 
 
             elif opcao == 2:
-                self.__medicamentos.remove(medicamento)
+                self.__medicamentos_DAO.remove(medicamento)
                 self.__tela_medicamento.mostra_msg("Medicamento removido com sucesso.")
 
             elif opcao == 0:
@@ -101,10 +113,10 @@ class ControladorMedicamento:
         if len(self.__medicamentos) == 0:
             self.__tela_medicamento.mostra_msg("Não há nenhum medicamento registrado no sistema")
             return
-        self.__tela_medicamento.mostra_lista_medicamentos(self.__medicamentos)
+        self.__tela_medicamento.mostra_lista_medicamentos(self.__medicamentos_DAO.get_all())
 
     def get_medicamentos(self):
-        return self.__medicamentos
+        return self.__medicamentos_DAO
 
     def retornar(self):
         self.__controlador_sistema.abre_tela()

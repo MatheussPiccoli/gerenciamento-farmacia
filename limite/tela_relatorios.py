@@ -4,12 +4,12 @@ from datetime import datetime, date
 class TelaRelatorios():
     def tela_opcoes(self):
         layout = [
-            [sg.Text('-------- Relatórios --------', font=('Any', 16))],
-            [sg.Button('1 - Vendas por Período', key='1')],
-            [sg.Button('2 - Medicamentos mais Vendidos', key='2')],
-            [sg.Button('3 - Clientes que mais Compraram', key='3')],
-            [sg.Button('4 - Melhores Vendedores', key='4')],
-            [sg.Button('0 - Retornar', key='0')]
+            [sg.Text('-------- Relatórios --------', font=('Helvica', 20))],
+            [sg.Button('Vendas por Período', key='1')],
+            [sg.Button('Medicamentos mais Vendidos', key='2')],
+            [sg.Button('Clientes que mais Compraram', key='3')],
+            [sg.Button('Melhores Vendedores', key='4')],
+            [sg.Button('Retornar', key='0')]
         ]
         window = sg.Window('Menu Relatórios', layout)
         opcao = None

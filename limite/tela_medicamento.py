@@ -3,11 +3,11 @@ import PySimpleGUI as sg
 class TelaMedicamento():
     def tela_opcoes(self):
         layout = [
-            [sg.Text('-------- Medicamentos --------', font=('Any', 16))],
-            [sg.Button('1 - Registrar Medicamento', key='1')],
-            [sg.Button('2 - Alterar ou Excluir Medicamento', key='2')],
-            [sg.Button('3 - Listar Medicamentos', key='3')],
-            [sg.Button('0 - Retornar', key='0')]
+            [sg.Text('-------- Medicamentos --------', font=('Helvica', 20))],
+            [sg.Button('Registrar Medicamento', key='1')],
+            [sg.Button('Alterar ou Excluir Medicamento', key='2')],
+            [sg.Button('Listar Medicamentos', key='3')],
+            [sg.Button('Retornar', key='0')]
         ]
         window = sg.Window('Menu Medicamentos', layout)
         opcao = None

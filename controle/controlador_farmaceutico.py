@@ -1,110 +1,117 @@
 from limite.tela_farmaceutico import TelaFarmaceutico
 from Models.farmaceutico import Farmaceutico
 from controle.exceptions import FarmaceuticoNaoExistente, FarmaceuticoNaoEncontrado
+from DAOs.farmaceutico_dao import farmaceuticoDAO
 
 
 class ControladorFarmaceutico():
     def __init__(self, controlador_sistema):
-        self.__farmaceuticos = []
+        self.__farmaceutico_DAO = farmaceuticoDAO()
         self.__tela_farmaceutico = TelaFarmaceutico()
         self.__controlador_sistema = controlador_sistema
-        self.cria_farmaceuticos_iniciais()
+        self.cria_farmaceutico_iniciais()
 
-    def cria_farmaceuticos_iniciais(self):
+    def cria_farmaceutico_iniciais(self):
         Farmaceutico.contador_id = 0
         farmaceutico1 = Farmaceutico("Dr. João Saúde", "12345678901", 3500.00)
         farmaceutico2 = Farmaceutico("Dra. Maria Cura", "09876543210", 4000.00)
         
-        self.__farmaceuticos.append(farmaceutico1)
-        self.__farmaceuticos.append(farmaceutico2)
+        self.__farmaceutico_DAO.add(farmaceutico1)
+        self.__farmaceutico_DAO.add(farmaceutico2)
     
     def pega_farmaceutico_por_cpf(self, cpf: str):
-        for farmaceutico in self.__farmaceuticos:
-            if(farmaceutico.cpf == cpf):
+        for farmaceutico in self.__farmaceutico_DAO.get_all():
+            print(farmaceutico.cpf)
+            if farmaceutico.cpf == cpf:
                 return farmaceutico
-        raise FarmaceuticoNaoEncontrado(f"Farmacêutico com CPF '{cpf}' não encontrado.") 
+        raise FarmaceuticoNaoEncontrado(f"farmaceutico com CPF '{cpf}' não encontrado.") 
 
     def incluir_farmaceutico(self):
         dados_farmaceutico = self.__tela_farmaceutico.pega_dados_farmaceutico()
         if dados_farmaceutico is None:
-            self.__tela_farmaceutico.mostra_mensagem("Cadastro de farmacêutico cancelado.")
+            self.__tela_farmaceutico.mostra_mensagem("Cadastro de farmaceutico cancelado.")
             return
-
+        
         try:
             self.pega_farmaceutico_por_cpf(dados_farmaceutico["cpf"])
-            self.__tela_farmaceutico.mostra_mensagem("Erro: Já existe um farmacêutico com este CPF.")
+            self.__tela_farmaceutico.mostra_mensagem("Erro: Já existe um farmaceutico com este CPF.")
             return
         except FarmaceuticoNaoEncontrado:
             pass
 
-        farmaceutico = Farmaceutico(
-            dados_farmaceutico["nome"],
-            dados_farmaceutico["cpf"],
-            dados_farmaceutico["salario"]
-        )
-        self.__farmaceuticos.append(farmaceutico)
-        self.__tela_farmaceutico.mostra_mensagem("Farmacêutico cadastrado com sucesso!")
+        farmaceutico = farmaceutico(dados_farmaceutico["nome"], dados_farmaceutico["cpf"], 
+                            dados_farmaceutico["salario"])
+        self.__farmaceutico_DAO.add(farmaceutico)
+        self.__tela_farmaceutico.mostra_mensagem("farmaceutico cadastrado com sucesso!")
     
     def alterar_farmaceutico(self):
-        self.lista_farmaceuticos()
+        self.lista_farmaceutico()
         cpf_farmaceutico = self.__tela_farmaceutico.seleciona_farmaceutico()
-        if not cpf_farmaceutico:
-            self.__tela_farmaceutico.mostra_mensagem("Seleção de farmacêutico para alteração cancelada.")
+        if not cpf_farmaceutico: 
+            self.__tela_farmaceutico.mostra_mensagem("Seleção de farmaceutico para alteração cancelada.")
             return
 
         try:
             farmaceutico = self.pega_farmaceutico_por_cpf(cpf_farmaceutico)
         except FarmaceuticoNaoEncontrado:
-            self.__tela_farmaceutico.mostra_mensagem("Farmacêutico não encontrado para alteração.")
+            self.__tela_farmaceutico.mostra_mensagem("farmaceutico não encontrado para alteração.")
             return
 
         novos_dados_farmaceutico = self.__tela_farmaceutico.pega_dados_farmaceutico()
         if novos_dados_farmaceutico is None:
-            self.__tela_farmaceutico.mostra_mensagem("Alteração de farmacêutico cancelada.")
+            self.__tela_farmaceutico.mostra_mensagem("Alteração de farmaceutico cancelada.")
             return
 
         if novos_dados_farmaceutico["cpf"] != farmaceutico.cpf:
             try:
                 self.pega_farmaceutico_por_cpf(novos_dados_farmaceutico["cpf"])
-                self.__tela_farmaceutico.mostra_mensagem("Erro: O novo CPF já pertence a outro farmacêutico.")
+                self.__tela_farmaceutico.mostra_mensagem("Erro: O novo CPF já pertence a outro farmaceutico.")
                 return
             except FarmaceuticoNaoEncontrado:
                 pass
-
-        farmaceutico.nome = novos_dados_farmaceutico["nome"]
-        farmaceutico.cpf = novos_dados_farmaceutico["cpf"]
-        farmaceutico.salario = novos_dados_farmaceutico["salario"]
-        self.__tela_farmaceutico.mostra_mensagem("Farmacêutico alterado com sucesso!")
-        self.lista_farmaceuticos()
-
-    def lista_farmaceuticos(self):
-        if not self.__farmaceuticos:
-            self.__tela_farmaceutico.mostra_mensagem("Nenhum farmacêutico cadastrado.")
+        if farmaceutico is not None:
+            farmaceutico.nome = novos_dados_farmaceutico["nome"]
+            farmaceutico.cpf = novos_dados_farmaceutico["cpf"]
+            farmaceutico.salario = novos_dados_farmaceutico["salario"]
+            
+            self.__tela_farmaceutico.mostra_mensagem("farmaceutico alterado com sucesso!")
+            self.__farmaceutico_DAO.update(farmaceutico)
+            self.lista_farmaceutico()
+        else:
+            self.__tela_farmaceutico.mostra_mensagem("farmaceutico não encontrado para alteração.")
             return
-        
-        for farmaceutico in self.__farmaceuticos:
-            self.__tela_farmaceutico.mostra_farmaceutico({
-                "nome": farmaceutico.nome,
-                "cpf": farmaceutico.cpf,
-                "salario": farmaceutico.salario
-            })
+
+    def lista_farmaceutico(self):
+        if not self.__farmaceutico_DAO.get_all():
+            self.__tela_farmaceutico.mostra_mensagem("Nenhum farmaceutico cadastrado.")
+            return
+
+        dados_farmaceutico = []
+        for farmaceutico in self.__farmaceutico_DAO.get_all():
+            dados_farmaceutico.append({"nome": farmaceutico.nome, "cpf": farmaceutico.cpf,
+                                                 "salario": farmaceutico.salario, "id": farmaceutico.id})
+        self.__tela_farmaceutico.mostra_farmaceuticos(dados_farmaceutico)
 
     def excluir_farmaceutico(self):
-        self.lista_farmaceuticos()
+        self.lista_farmaceutico()
         cpf_farmaceutico = self.__tela_farmaceutico.seleciona_farmaceutico()
-        if not cpf_farmaceutico: # Se a tela retornou um CPF inválido
-            self.__tela_farmaceutico.mostra_mensagem("Seleção de farmacêutico para exclusão cancelada.")
+        if not cpf_farmaceutico:
+            self.__tela_farmaceutico.mostra_mensagem("Seleção de farmaceutico para exclusão cancelada.")
             return
 
         try:
             farmaceutico = self.pega_farmaceutico_por_cpf(cpf_farmaceutico)
         except FarmaceuticoNaoEncontrado:
-            self.__tela_farmaceutico.mostra_mensagem("Farmacêutico não encontrado para exclusão.")
+            self.__tela_farmaceutico.mostra_mensagem("farmaceutico não encontrado para exclusão.")
             return
 
-        self.__farmaceuticos.remove(farmaceutico)
-        self.__tela_farmaceutico.mostra_mensagem("Farmacêutico excluído com sucesso!")
-        self.lista_farmaceuticos()
+        if farmaceutico is not None:
+            self.__farmaceutico_DAO.remove(farmaceutico)
+            self.__tela_farmaceutico.mostra_mensagem("farmaceutico excluído com sucesso!")
+            self.lista_farmaceutico()
+        else:
+            self.__tela_farmaceutico.mostra_mensagem("farmaceutico não encontrado para exclusão.")
+            return
     
     def retornar(self):
         self.__controlador_sistema.abre_tela()
@@ -113,7 +120,7 @@ class ControladorFarmaceutico():
         lista_opcoes = {
             1: self.incluir_farmaceutico,
             2: self.alterar_farmaceutico,
-            3: self.lista_farmaceuticos,
+            3: self.lista_farmaceutico,
             4: self.excluir_farmaceutico,
             0: self.retornar
         }
@@ -135,6 +142,6 @@ class ControladorFarmaceutico():
                 except Exception as erro:
                     self.__tela_farmaceutico.mostra_mensagem(f"Ocorreu um erro: {erro}")
             elif opcao == 0:
-                continua = False # Quebra o loop do farmacêutico
+                continua = False 
             else:
                 self.__tela_farmaceutico.mostra_mensagem("Opção inválida. Escolha uma das opções acima.")

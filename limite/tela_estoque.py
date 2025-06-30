@@ -5,14 +5,14 @@ class TelaEstoque():
 
     def tela_opcoes(self):
         layout = [
-                [sg.Text("------ Estoque ------", font=('Any', 16))],
-                [sg.Button("1 - Listar Estoque", key='1')],
-                [sg.Button("2 - Aumentar Estoque (Adicionar Lote)", key='2')],
-                [sg.Button("3 - Baixar Estoque", key='3')],
-                [sg.Button("4 - Verificar Estoque Baixo", key='4')],
-                [sg.Button("5 - Listar Lotes Vencidos", key='5')],
-                [sg.Button("6 - Listar Lotes Próximos ao Vencimento", key='6')],
-                [sg.Button("0 - Retornar", key='0')],
+                [sg.Text("------ Estoque ------", font=('Helvica', 20))],
+                [sg.Button("Listar Estoque", key='1')],
+                [sg.Button("Aumentar Estoque (Adicionar Lote)", key='2')],
+                [sg.Button("Baixar Estoque", key='3')],
+                [sg.Button("Verificar Estoque Baixo", key='4')],
+                [sg.Button("Listar Lotes Vencidos", key='5')],
+                [sg.Button("Listar Lotes Próximos ao Vencimento", key='6')],
+                [sg.Button("Retornar", key='0')],
         ]
         window = sg.Window('Menu Estoque', layout)
         opcao = None

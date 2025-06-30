@@ -1,12 +1,13 @@
 from limite.tela_cliente import TelaCliente
 from Models.cliente import Cliente
 from controle.exceptions import ClienteNaoEncontrado
+from DAOs.cliente_dao import ClienteDAO
 
 
 class Controladorclientes():
 
     def __init__(self, controlador_sistema):
-        self.__clientes = []
+        self.__clientes_DAO = ClienteDAO()
         self.__tela_cliente = TelaCliente()
         self.__controlador_sistema = controlador_sistema
         self.cria_clientes_iniciais()
@@ -17,13 +18,14 @@ class Controladorclientes():
         cliente2 = Cliente("Bruno Costa", "55566677788", "48999990000")
         cliente3 = Cliente("Carla Dias", "99988877766", "")
 
-        self.__clientes.append(cliente1)
-        self.__clientes.append(cliente2)
-        self.__clientes.append(cliente3)
+        self.__clientes_DAO.add(cliente1)
+        self.__clientes_DAO.add(cliente2)
+        self.__clientes_DAO.add(cliente3)
 
     def pega_cliente_por_cpf(self, cpf: str):
-        for cliente in self.__clientes:
-            if(cliente.cpf == cpf):
+        for cliente in self.__clientes_DAO.get_all():
+            print(cliente.cpf)
+            if cliente.cpf == cpf:
                 return cliente
         raise ClienteNaoEncontrado(f"Cliente com CPF '{cpf}' não encontrado.")
 
@@ -42,7 +44,7 @@ class Controladorclientes():
 
         cliente = Cliente(dados_cliente["nome"], dados_cliente["cpf"], 
                             dados_cliente["telefone"])
-        self.__clientes.append(cliente)
+        self.__clientes_DAO.add(cliente)
         self.__tela_cliente.mostra_mensagem("Cliente cadastrado com sucesso!")
 
     def alterar_cliente(self):
@@ -70,22 +72,28 @@ class Controladorclientes():
                 return
             except ClienteNaoEncontrado:
                 pass
-
-        cliente.nome = novos_dados_cliente["nome"]
-        cliente.cpf = novos_dados_cliente["cpf"]
-        cliente.telefone = novos_dados_cliente["telefone"]
-        
-        self.__tela_cliente.mostra_mensagem("Cliente alterado com sucesso!")
-        self.lista_clientes()
+        if cliente is not None:
+            cliente.nome = novos_dados_cliente["nome"]
+            cliente.cpf = novos_dados_cliente["cpf"]
+            cliente.telefone = novos_dados_cliente["telefone"]
+            
+            self.__tela_cliente.mostra_mensagem("Cliente alterado com sucesso!")
+            self.__clientes_DAO.update(cliente)
+            self.lista_clientes()
+        else:
+            self.__tela_cliente.mostra_mensagem("Cliente não encontrado para alteração.")
+            return
 
     def lista_clientes(self):
-        if not self.__clientes:
+        if not self.__clientes_DAO.get_all():
             self.__tela_cliente.mostra_mensagem("Nenhum cliente cadastrado.")
             return
 
-        for cliente in self.__clientes:
-            self.__tela_cliente.mostra_cliente({"nome": cliente.nome, "cpf": cliente.cpf,
+        dados_clientes = []
+        for cliente in self.__clientes_DAO.get_all():
+            dados_clientes.append({"nome": cliente.nome, "cpf": cliente.cpf,
                                                  "telefone": cliente.telefone, "id": cliente.id})
+        self.__tela_cliente.mostra_clientes(dados_clientes)
             
 
     def excluir_cliente(self):
@@ -101,9 +109,13 @@ class Controladorclientes():
             self.__tela_cliente.mostra_mensagem("Cliente não encontrado para exclusão.")
             return
 
-        self.__clientes.remove(cliente)
-        self.__tela_cliente.mostra_mensagem("Cliente excluído com sucesso!")
-        self.lista_clientes()
+        if cliente is not None:
+            self.__clientes_DAO.remove(cliente)
+            self.__tela_cliente.mostra_mensagem("Cliente excluído com sucesso!")
+            self.lista_clientes()
+        else:
+            self.__tela_cliente.mostra_mensagem("Cliente não encontrado para exclusão.")
+            return
 
     def retornar(self):
         self.__controlador_sistema.abre_tela()

@@ -5,13 +5,13 @@ class TelaVenda():
 
     def tela_opcoes(self):
         layout = [
-            [sg.Text("------ Vendas ------", font=('Any', 16))],
-            [sg.Text("Escolha a opção", font=('Any', 14))],
-            [sg.Button("1 - Registrar Nova Venda", key='1')],
-            [sg.Button("2 - Alterar Venda Existente", key='2')],
-            [sg.Button("3 - Listar Todas as Vendas", key='3')],
-            [sg.Button("4 - Excluir Venda", key='4')],
-            [sg.Button("0 - Retornar", key='0')]
+            [sg.Text("------ Vendas ------", font=('Helvica', 20))],
+            [sg.Text("Escolha a opção", font=('Helvica', 14))],
+            [sg.Button("Registrar Nova Venda", key='1')],
+            [sg.Button("Alterar Venda Existente", key='2')],
+            [sg.Button("Listar Todas as Vendas", key='3')],
+            [sg.Button("Excluir Venda", key='4')],
+            [sg.Button("Retornar", key='0')]
         ]
         window = sg.Window('Menu Vendas', layout)
         opcao = None
@@ -28,7 +28,7 @@ class TelaVenda():
 
     def pega_dados_item(self):
         layout = [
-            [sg.Text("------ Dados do Item ------", font=('Any', 14))],
+            [sg.Text("------ Dados do Item ------", font=('Helvica', 14))],
             [sg.Text("ID do Medicamento:"), sg.Input(key='id_medicamento')],
             [sg.Text("Quantidade:"), sg.Input(key='quantidade')],
             [sg.Button("OK"), sg.Button("Cancelar")]
@@ -98,13 +98,13 @@ class TelaVenda():
         
     def mostra_venda(self, dados_venda: dict):
         layout = [
-            [sg.Text(f"ID da Venda: {dados_venda['id']}", font=('Any', 14))],
-            [sg.Text(f"Cliente: {dados_venda['cliente_nome']}", font=('Any', 12))],
-            [sg.Text(f"Farmacêutico: {dados_venda['farmaceutico_nome']}", font=('Any', 12))],
-            [sg.Text(f"Data: {dados_venda['data']}", font=('Any', 12))],
-            [sg.Text("Itens da Venda:", font=('Any', 12))],
+            [sg.Text(f"ID da Venda: {dados_venda['id']}", font=('Helvica', 14))],
+            [sg.Text(f"Cliente: {dados_venda['cliente_nome']}", font=('Helvica', 12))],
+            [sg.Text(f"Farmacêutico: {dados_venda['farmaceutico_nome']}", font=('Helvica', 12))],
+            [sg.Text(f"Data: {dados_venda['data']}", font=('Helvica', 12))],
+            [sg.Text("Itens da Venda:", font=('Helvica', 12))],
             [sg.Listbox(values=[f"{item['medicamento_nome']} - Qtd: {item['quantidade']} - Subtotal: R$ {item['subtotal']:.2f}" for item in dados_venda['itens']], size=(50, 10), key='itens')],
-            [sg.Text(f"Valor Total: R$ {dados_venda['valor_total']:.2f}", font=('Any', 12))],
+            [sg.Text(f"Valor Total: R$ {dados_venda['valor_total']:.2f}", font=('Helvica', 12))],
             [sg.Button("OK")]
         ]
         window = sg.Window('Detalhes da Venda', layout)
