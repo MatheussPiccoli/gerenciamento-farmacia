@@ -16,7 +16,7 @@ class ClienteDAO(DAO):
             and isinstance(cliente.cpf, str) and isinstance(cliente.telefone, str)):
             super().update(cliente.cpf, cliente)
 
-    def get(self, cpf: str) -> Cliente:
+    def get(self, cpf: str) -> Cliente | None:
         if isinstance(cpf, str):
             return super().get(cpf)
         return None

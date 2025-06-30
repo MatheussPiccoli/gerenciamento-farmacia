@@ -1,4 +1,3 @@
-
 from limite.tela_venda import TelaVenda
 from limite.tela_cliente import TelaCliente
 from Models.venda import Venda
@@ -6,6 +5,7 @@ from Models.itemvenda import ItemVenda
 from controle.exceptions import MedicamentoNaoEncontrado, VendaNaoExistente, EstoqueInsuficiente, ClienteNaoEncontrado, FarmaceuticoNaoEncontrado
 from datetime import date
 from controle.controlador_cliente import Controladorclientes
+from DAOs.venda_dao import VendaDAO
 
 
 class ControladorVenda:
@@ -13,7 +13,7 @@ class ControladorVenda:
         self.__controlador_sistema = controlador_sistema
         self.__tela_venda = TelaVenda()
         self.__tela_cliente = TelaCliente()
-        self.__vendas = []
+        self.__venda_DAO = VendaDAO()
         
     def registrar_venda(self):
         itens_venda = []
@@ -82,7 +82,7 @@ class ControladorVenda:
             return
 
         try:
-            self.__controlador_sistema.controlador_farmaceutico.lista_farmaceuticos()
+            self.__controlador_sistema.controlador_farmaceutico.lista_farmaceutico()
             cpf_farmaceutico = self.__tela_venda.pega_cpf_farmaceutico()
 
             if not cpf_farmaceutico:
@@ -101,24 +101,25 @@ class ControladorVenda:
             self.__tela_venda.mostra_mensagem("CPF de farmacêutico inválido. Venda cancelada.")
             return
         except Exception as e:
-            self.__tela_venda.mostra_mensagem(f"Erro ao selecionar farmacêutico: {erro}. Venda cancelada.")
+            self.__tela_venda.mostra_mensagem(f"Erro ao selecionar farmacêutico: {e}. Venda cancelada.")
             return
 
         nova_venda = Venda(cliente=cliente, farmaceutico=farmaceutico, data=date.today())
         for item in itens_venda:
             nova_venda.adicionar_item(item)
 
-        self.__vendas.append(nova_venda)
+        self.__venda_DAO.add(nova_venda)
         total = nova_venda.valor_total()
 
         self.__tela_venda.mostra_mensagem(f"Venda registrada com sucesso! ID da Venda: {nova_venda.id} | Total: R$ {total:.2f}")
 
     def listar_vendas(self):
-        if not self.__vendas:
+        vendas = self.__venda_DAO.get_all()
+        if not vendas:
             self.__tela_venda.mostra_mensagem("Nenhuma venda registrada.")
             return
-
-        for venda in self.__vendas:
+        lista_vendas = []
+        for venda in vendas:
             itens_para_tela = []
             for item in venda.itens:
                 itens_para_tela.append({
@@ -127,8 +128,7 @@ class ControladorVenda:
                     "quantidade": item.quantidade,
                     "subtotal": item.subtotal
                 })
-
-            self.__tela_venda.mostra_venda({
+            lista_vendas.append({
                 "id": venda.id,
                 "cliente_nome": venda.cliente.nome,
                 "farmaceutico_nome": venda.farmaceutico.nome,
@@ -136,9 +136,10 @@ class ControladorVenda:
                 "itens": itens_para_tela,
                 "valor_total": venda.valor_total()
             })
+        self.__tela_venda.mostra_lista_vendas(lista_vendas)
 
     def pega_venda_por_id(self, id: int):
-        for venda in self.__vendas:
+        for venda in self.__venda_DAO.get_all():
             if venda.id == id:
                 return venda
         return None
@@ -146,7 +147,10 @@ class ControladorVenda:
     def alterar_venda(self):
         self.listar_vendas()
         id_venda = self.__tela_venda.seleciona_venda()
-        venda = self.pega_venda_por_id(id_venda)
+        if id_venda is None or not str(id_venda).isdigit():
+            self.__tela_venda.mostra_mensagem("ID da venda inválido ou não fornecido. Operação cancelada.")
+            return
+        venda = self.pega_venda_por_id(int(id_venda))
 
         if venda:
             self.__tela_venda.mostra_mensagem("Selecione o novo cliente e farmacêutico para a venda.")
@@ -165,7 +169,7 @@ class ControladorVenda:
                 venda.cliente = novo_cliente
                 self.__tela_venda.mostra_mensagem("Cliente da venda atualizado.")
 
-                self.__controlador_sistema.controlador_farmaceutico.lista_farmaceuticos()
+                self.__controlador_sistema.controlador_farmaceutico.lista_farmaceutico()
                 novo_cpf_farmaceutico = self.__tela_venda.pega_cpf_farmaceutico()
                 if not novo_cpf_farmaceutico:
                     self.__tela_venda.mostra_mensagem("CPF do novo farmacêutico não fornecido. Farmacêutico não alterado.")
@@ -192,10 +196,13 @@ class ControladorVenda:
     def excluir_venda(self):
         self.listar_vendas()
         id_venda = self.__tela_venda.seleciona_venda()
-        venda = self.pega_venda_por_id(id_venda)
+        if id_venda is None or not str(id_venda).isdigit():
+            self.__tela_venda.mostra_mensagem("ID da venda inválido ou não fornecido. Operação cancelada.")
+            return
+        venda = self.pega_venda_por_id(int(id_venda))
 
         if venda:
-            self.__vendas.remove(venda)
+            self.__venda_DAO.remove(venda.id)
             self.__tela_venda.mostra_mensagem("Venda excluída com sucesso.")
         else:
             self.__tela_venda.mostra_mensagem("Venda não encontrada.")
@@ -204,11 +211,11 @@ class ControladorVenda:
         self.__controlador_sistema.abre_tela()
 
     def get_vendas(self):
-        return self.__vendas
+        return self.__venda_DAO.get_all()
     
     def get_vendas_por_periodo(self, data_inicio: date, data_fim: date) -> list[Venda]:
         vendas_filtradas = [
-            venda for venda in self.__vendas if data_inicio <= venda.data <= data_fim
+            venda for venda in self.get_vendas() if data_inicio <= venda.data <= data_fim
         ]
         return vendas_filtradas
 

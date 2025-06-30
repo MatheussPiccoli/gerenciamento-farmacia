@@ -72,7 +72,7 @@ class TelaEstoque():
             return
         linhas = []
         for lote in lotes:
-            linhas.append(f"Medicamento: {lote.medicamento.nome} | Lote: {lote.lote} | Validade: {lote.validade} | Quantidade: {lote.quantidade}")
+            linhas.append(f"ID: {lote.medicamento.id} | Medicamento: {lote.medicamento.nome} | Lote: {lote.lote} | Validade: {lote.validade} | Quantidade: {lote.quantidade}")
         window = sg.Window('Estoque', [[sg.Text('\n'.join(linhas))]])
         window.read()
         window.close()
@@ -83,3 +83,51 @@ class TelaEstoque():
 
     def mostra_mensagem(self, msg):
         print(msg)
+
+    def mostra_estoque_baixo(self, lotes_baixos):
+        if not lotes_baixos:
+            sg.popup('Nenhum medicamento com estoque baixo (quantidade abaixo de 5).')
+            return
+        linhas = ["MEDICAMENTOS COM ESTOQUE BAIXO", ""]
+        for lote in lotes_baixos:
+            linhas.append(f"Medicamento: {lote.medicamento.nome} | Lote: {lote.lote} | Validade: {lote.validade} | Quantidade: {lote.quantidade}")
+        layout = [
+            [sg.Text('Estoque Baixo', font=('Helvica', 16, 'bold'))],
+            [sg.Multiline('\n'.join(linhas), size=(80, min(15, len(linhas)+2)), font=('Consolas', 12), disabled=True, autoscroll=True)],
+            [sg.Button('OK')]
+        ]
+        window = sg.Window('Estoque Baixo', layout, resizable=True, finalize=True)
+        window.read()
+        window.close()
+
+    def mostra_lotes_vencidos(self, lotes_vencidos):
+        if not lotes_vencidos:
+            sg.popup('Nenhum lote vencido encontrado.')
+            return
+        linhas = ["LOTES VENCIDOS", ""]
+        for lote in lotes_vencidos:
+            linhas.append(f"Medicamento: {lote.medicamento.nome} | Lote: {lote.lote} | Validade: {lote.validade} | Quantidade: {lote.quantidade}")
+        layout = [
+            [sg.Text('Lotes Vencidos', font=('Helvica', 16, 'bold'))],
+            [sg.Multiline('\n'.join(linhas), size=(80, min(15, len(linhas)+2)), font=('Consolas', 12), disabled=True, autoscroll=True)],
+            [sg.Button('OK')]
+        ]
+        window = sg.Window('Lotes Vencidos', layout, resizable=True, finalize=True)
+        window.read()
+        window.close()
+
+    def mostra_lotes_proximos(self, lotes_proximos):
+        if not lotes_proximos:
+            sg.popup('Nenhum lote próximo ao vencimento encontrado.')
+            return
+        linhas = ["LOTES PRÓXIMOS AO VENCIMENTO", ""]
+        for lote in lotes_proximos:
+            linhas.append(f"Medicamento: {lote.medicamento.nome} | Lote: {lote.lote} | Validade: {lote.validade} | Quantidade: {lote.quantidade}")
+        layout = [
+            [sg.Text('Lotes Próximos ao Vencimento', font=('Helvica', 16, 'bold'))],
+            [sg.Multiline('\n'.join(linhas), size=(80, min(15, len(linhas)+2)), font=('Consolas', 12), disabled=True, autoscroll=True)],
+            [sg.Button('OK')]
+        ]
+        window = sg.Window('Lotes Próximos ao Vencimento', layout, resizable=True, finalize=True)
+        window.read()
+        window.close()

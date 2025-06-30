@@ -9,15 +9,7 @@ class ControladorFarmaceutico():
         self.__farmaceutico_DAO = farmaceuticoDAO()
         self.__tela_farmaceutico = TelaFarmaceutico()
         self.__controlador_sistema = controlador_sistema
-        self.cria_farmaceutico_iniciais()
 
-    def cria_farmaceutico_iniciais(self):
-        Farmaceutico.contador_id = 0
-        farmaceutico1 = Farmaceutico("Dr. João Saúde", "12345678901", 3500.00)
-        farmaceutico2 = Farmaceutico("Dra. Maria Cura", "09876543210", 4000.00)
-        
-        self.__farmaceutico_DAO.add(farmaceutico1)
-        self.__farmaceutico_DAO.add(farmaceutico2)
     
     def pega_farmaceutico_por_cpf(self, cpf: str):
         for farmaceutico in self.__farmaceutico_DAO.get_all():
@@ -39,9 +31,8 @@ class ControladorFarmaceutico():
         except FarmaceuticoNaoEncontrado:
             pass
 
-        farmaceutico = farmaceutico(dados_farmaceutico["nome"], dados_farmaceutico["cpf"], 
-                            dados_farmaceutico["salario"])
-        self.__farmaceutico_DAO.add(farmaceutico)
+        farmaceutico_obj = Farmaceutico(dados_farmaceutico["nome"], dados_farmaceutico["cpf"], dados_farmaceutico["salario"])
+        self.__farmaceutico_DAO.add(farmaceutico_obj)
         self.__tela_farmaceutico.mostra_mensagem("farmaceutico cadastrado com sucesso!")
     
     def alterar_farmaceutico(self):
@@ -106,7 +97,7 @@ class ControladorFarmaceutico():
             return
 
         if farmaceutico is not None:
-            self.__farmaceutico_DAO.remove(farmaceutico)
+            self.__farmaceutico_DAO.remove(farmaceutico.cpf)
             self.__tela_farmaceutico.mostra_mensagem("farmaceutico excluído com sucesso!")
             self.lista_farmaceutico()
         else:

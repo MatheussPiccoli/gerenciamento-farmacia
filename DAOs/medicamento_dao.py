@@ -17,7 +17,7 @@ class MedicamentoDAO(DAO):
                 isinstance(medicamento.id, str) and isinstance(medicamento.nome, str)):
             super().update(medicamento.nome, medicamento)
 
-    def get(self, nome: str) -> Medicamento:
+    def get(self, nome: str) -> Medicamento | None:
         if isinstance(nome, str):
             return super().get(nome)
         return None

@@ -12,11 +12,9 @@ class EstoqueDAO:
         try:
             with open(self.__datasource, 'rb') as file:
                 loaded_data = pickle.load(file)
-                # Verifica se os dados carregados são um objeto Estoque válido
                 if isinstance(loaded_data, Estoque):
                     self.__estoque = loaded_data
                 else:
-                    # Se não for um Estoque válido, cria um novo
                     self.__estoque = Estoque()
                     self.__dump()
         except (FileNotFoundError, EOFError):

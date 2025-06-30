@@ -17,10 +17,7 @@ class ControladorSistema:
         self.__tela_sistema = TelaSistema()
         self.__controlador_relatorios = RelatorioController(self)
         self.__controlador_venda = ControladorVenda(self)
-        self.carrega_dados_iniciais_sistema()
 
-    def carrega_dados_iniciais_sistema(self):
-        self.__controlador_estoque.cria_estoque_inicial()
 
     @property
     def controlador_cliente(self):
@@ -67,9 +64,6 @@ class ControladorSistema:
 
     def relatorios(self):
         self.__controlador_relatorios.abre_tela()
-
-    def cadastra_lote(self):
-        self.__controlador_lote.abre_tela()
 
     def encerra_sistema(self):
         exit(0)

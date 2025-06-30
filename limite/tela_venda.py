@@ -29,7 +29,7 @@ class TelaVenda():
     def pega_dados_item(self):
         layout = [
             [sg.Text("------ Dados do Item ------", font=('Helvica', 14))],
-            [sg.Text("ID do Medicamento:"), sg.Input(key='id_medicamento')],
+            [sg.Text("Nome do Medicamento:"), sg.Input(key='nome_medicamento')],
             [sg.Text("Quantidade:"), sg.Input(key='quantidade')],
             [sg.Button("OK"), sg.Button("Cancelar")]
         ]
@@ -41,18 +41,17 @@ class TelaVenda():
                 return None
             
             try:
-                id_medicamento = int(values['id_medicamento'])
+                nome_medicamento = values['nome_medicamento'].strip()
                 quantidade = int(values['quantidade'])
-                if id_medicamento <= 0 or quantidade <= 0:
-                    raise ValueError("ID e quantidade devem ser maiores que zero.")
+                if not nome_medicamento or quantidade <= 0:
+                    raise ValueError("Nome e quantidade devem ser preenchidos corretamente.")
                 
                 window.close()
-                return {"id_medicamento": id_medicamento, "quantidade": quantidade}
+                return {"nome": nome_medicamento, "quantidade": quantidade}
             except ValueError as e:
                 sg.popup(f"Erro: {e}. Por favor, preencha corretamente.")
 
     def continuar_venda(self):
-        sg.popup("Deseja continuar adicionando itens à venda?", title="Continuar Venda", custom_text=("Sim", "Não"))
         layout = [
             [sg.Text("Deseja continuar adicionando itens à venda?")],
             [sg.Button("Sim"), sg.Button("Não")]
@@ -62,6 +61,7 @@ class TelaVenda():
         window.close()
         if event == "Sim":
             return True
+        return False
 
     def seleciona_venda(self):
         layout = [
@@ -74,28 +74,44 @@ class TelaVenda():
         window.close()  
         return valuer['id_venda'] if event == 'OK' else None
 
-    def pega_cpf_cliente(self) -> str:
-        sg.popup('Digite o CPF do cliente (somente números, 11 dígitos). Digite "0" para não informar.')
+    def pega_cpf_cliente(self) -> str | None:
+        layout = [
+            [sg.Text("Digite o CPF do cliente (somente números, 11 dígitos):")],
+            [sg.Input(key='cpf')],
+            [sg.Button("OK"), sg.Button("Cancelar")]
+        ]
+        window = sg.Window('CPF do Cliente', layout)
         while True:
-            cpf = input("Digite o CPF do cliente (somente números): ").strip()
-            if cpf == '0':
+            event, values = window.read()
+            if event in (sg.WIN_CLOSED, 'Cancelar'):
+                window.close()
                 return None
+            cpf = values['cpf'].strip()
             if cpf.isdigit() and len(cpf) == 11:
+                window.close()
                 return cpf
             else:
-                self.mostra_mensagem("CPF inválido. Deve conter 11 dígitos numéricos. Digite '0' para não informar.")
+                sg.popup("CPF inválido. Deve conter 11 dígitos numéricos.")
 
-    def pega_cpf_farmaceutico(self) -> str:
-        sg.popup('Digite o CPF do farmacêutico (somente números, 11 dígitos). Digite "0" para não informar.')
+    def pega_cpf_farmaceutico(self) -> str | None:
+        layout = [
+            [sg.Text("Digite o CPF do farmacêutico (somente números, 11 dígitos):")],
+            [sg.Input(key='cpf')],
+            [sg.Button("OK"), sg.Button("Cancelar")]
+        ]
+        window = sg.Window('CPF do Farmacêutico', layout)
         while True:
-            cpf = input("Digite o CPF do farmacêutico (somente números): ").strip()
-            if cpf == '0':
+            event, values = window.read()
+            if event in (sg.WIN_CLOSED, 'Cancelar'):
+                window.close()
                 return None
+            cpf = values['cpf'].strip()
             if cpf.isdigit() and len(cpf) == 11:
+                window.close()
                 return cpf
             else:
-                self.mostra_mensagem("CPF inválido. Deve conter 11 dígitos numéricos. Digite '0' para não informar.")
-        
+                sg.popup("CPF inválido. Deve conter 11 dígitos numéricos.")
+
     def mostra_venda(self, dados_venda: dict):
         layout = [
             [sg.Text(f"ID da Venda: {dados_venda['id']}", font=('Helvica', 14))],
@@ -116,3 +132,28 @@ class TelaVenda():
 
     def mostra_mensagem(self, msg: str):
         (msg)
+
+    def mostra_lista_vendas(self, lista_vendas: list[dict]):
+        if not lista_vendas:
+            sg.popup('Nenhuma venda registrada.')
+            return
+        linhas = []
+        for venda in lista_vendas:
+            linhas.append("="*60)
+            linhas.append(f"ID da Venda: {venda['id']}")
+            linhas.append(f"Cliente: {venda['cliente_nome']}")
+            linhas.append(f"Farmacêutico: {venda['farmaceutico_nome']}")
+            linhas.append(f"Data: {venda['data']}")
+            linhas.append(f"Valor Total: R$ {venda['valor_total']:.2f}")
+            linhas.append("Itens:")
+            for item in venda['itens']:
+                linhas.append(f"   - {item['medicamento_nome']} | Qtd: {item['quantidade']} | Subtotal: R$ {item['subtotal']:.2f}")
+            linhas.append("")
+        layout = [
+            [sg.Text('Lista de Vendas', font=('Helvica', 16, 'bold'))],
+            [sg.Multiline('\n'.join(linhas), size=(80, 25), font=('Consolas', 12), disabled=True, autoscroll=True, key='ml')],
+            [sg.Button('OK')]
+        ]
+        window = sg.Window('Lista de Vendas', layout, resizable=True, finalize=True)
+        window.read()
+        window.close()

@@ -48,6 +48,22 @@ class TelaRelatorios():
             except (ValueError, TypeError):
                 sg.popup('Formato de data inválido. Por favor, use o formato dd/mm/aaaa.')
 
+    def seleciona_periodo_rapido(self):
+        layout = [
+            [sg.Text('Selecione o período para o relatório:', font=('Any', 14))],
+            [sg.Button('Último mês', key='1')],
+            [sg.Button('Últimos 3 meses', key='2')],
+            [sg.Button('Últimos 6 meses', key='3')],
+            [sg.Button('Último ano', key='4')],
+            [sg.Button('Selecionar período manualmente', key='5')],
+            [sg.Button('Cancelar', key='0')]
+        ]
+        window = sg.Window('Escolher Período', layout)
+        while True:
+            event, _ = window.read()
+            window.close()
+            return event
+
     def mostra_venda(self, dados_venda):
         itens = ''
         if dados_venda["itens"]:
@@ -62,21 +78,23 @@ class TelaRelatorios():
         if not lista_vendas:
             sg.popup('Nenhuma venda encontrada para o período.')
             return
-        linhas = []
+        linhas = ["LISTAGEM DE VENDAS POR PERÍODO", ""]
         for venda in lista_vendas:
-            itens = ''
+            linhas.append("="*60)
+            linhas.append(f"Cliente: {venda['cliente']} | Farmacêutico: {venda['farmaceutico']} | Data: {venda['data']}")
+            linhas.append("Itens:")
             if venda["itens"]:
                 for item in venda["itens"]:
-                    itens += f"  - Medicamento: {item.medicamento.nome} | Quantidade: {item.quantidade} | Subtotal: R$ {item.subtotal:.2f}\n"
+                    linhas.append(f"   - Medicamento: {item.medicamento.nome} | Quantidade: {item.quantidade} | Subtotal: R$ {item.subtotal:.2f}")
             else:
-                itens = '  Nenhum item registrado para esta venda.'
-            linhas.append(f"Cliente: {venda['cliente']} | Farmacêutico: {venda['farmaceutico']} | Data: {venda['data']}\nItens:\n{itens}\n")
+                linhas.append('   Nenhum item registrado para esta venda.')
+            linhas.append("")
         layout = [
-            [sg.Text('Vendas Encontradas:')],
-            [sg.Multiline('\n'.join(linhas), size=(80, min(20, len(linhas)*4)), disabled=True)],
+            [sg.Text('Vendas Encontradas', font=('Helvica', 16, 'bold'))],
+            [sg.Multiline('\n'.join(linhas), size=(80, min(20, len(linhas)*2)), font=('Consolas', 12), disabled=True, autoscroll=True)],
             [sg.Button('OK')]
         ]
-        window = sg.Window('Vendas por Período', layout)
+        window = sg.Window('Vendas por Período', layout, resizable=True, finalize=True)
         window.read()
         window.close()
 
@@ -95,5 +113,53 @@ class TelaRelatorios():
 
     def mostra_msg(self, msg):
         sg.popup(msg)
+
+    def mostra_ranking_medicamentos(self, ranking: list[dict]):
+        if not ranking:
+            sg.popup('Nenhum medicamento vendido no período.')
+            return
+        linhas = ["RANKING - Medicamentos Mais Vendidos", ""]
+        for i, med in enumerate(ranking, 1):
+            linhas.append(f"{i:2d}. {med['nome']} ({med['fabricante']}) | Unidades vendidas: {med['quantidade_total']} | Total gerado: R$ {med['valor_total']:.2f}")
+        layout = [
+            [sg.Text('Medicamentos Mais Vendidos', font=('Helvica', 16, 'bold'))],
+            [sg.Multiline('\n'.join(linhas), size=(80, min(15, len(linhas)+2)), font=('Consolas', 12), disabled=True, autoscroll=True)],
+            [sg.Button('OK')]
+        ]
+        window = sg.Window('Ranking de Medicamentos', layout, resizable=True, finalize=True)
+        window.read()
+        window.close()
+
+    def mostra_ranking_clientes(self, ranking: list[dict]):
+        if not ranking:
+            sg.popup('Nenhum cliente realizou compras no período.')
+            return
+        linhas = ["RANKING - Clientes que Mais Compraram", ""]
+        for i, cli in enumerate(ranking, 1):
+            linhas.append(f"{i:2d}. {cli['nome']} | Produtos comprados: {cli['quantidade_total']} | Total gasto: R$ {cli['valor_total']:.2f}")
+        layout = [
+            [sg.Text('Clientes que Mais Compraram', font=('Helvica', 16, 'bold'))],
+            [sg.Multiline('\n'.join(linhas), size=(80, min(15, len(linhas)+2)), font=('Consolas', 12), disabled=True, autoscroll=True)],
+            [sg.Button('OK')]
+        ]
+        window = sg.Window('Ranking de Clientes', layout, resizable=True, finalize=True)
+        window.read()
+        window.close()
+
+    def mostra_ranking_vendedores(self, ranking: list[dict]):
+        if not ranking:
+            sg.popup('Nenhum vendedor realizou vendas no período.')
+            return
+        linhas = ["RANKING - Melhores Vendedores", ""]
+        for i, vend in enumerate(ranking, 1):
+            linhas.append(f"{i:2d}. {vend['nome']} (CPF: {vend['cpf']}) | Vendas: {vend['qtd_vendas']} | Total vendido: R$ {vend['valor_total']:.2f}")
+        layout = [
+            [sg.Text('Melhores Vendedores', font=('Helvica', 16, 'bold'))],
+            [sg.Multiline('\n'.join(linhas), size=(80, min(15, len(linhas)+2)), font=('Consolas', 12), disabled=True, autoscroll=True)],
+            [sg.Button('OK')]
+        ]
+        window = sg.Window('Ranking de Vendedores', layout, resizable=True, finalize=True)
+        window.read()
+        window.close()
 
         

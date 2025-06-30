@@ -12,11 +12,11 @@ class farmaceuticoDAO(DAO):
             super().add(farmaceutico.cpf, farmaceutico)
 
     def update(self, farmaceutico: Farmaceutico):
-        if ((farmaceutico is not None) and isinstance(farmaceutico, farmaceutico) \
-            and isinstance(farmaceutico.cpf, str) and isinstance(farmaceutico.salario)):
+        if ((farmaceutico is not None) and isinstance(farmaceutico, Farmaceutico) \
+            and isinstance(farmaceutico.cpf, str) and isinstance(farmaceutico.salario, float)):
             super().update(farmaceutico.cpf, farmaceutico)
 
-    def get(self, cpf: str) -> Farmaceutico:
+    def get(self, cpf: str) -> Farmaceutico | None:
         if isinstance(cpf, str):
             return super().get(cpf)
         return None

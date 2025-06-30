@@ -97,7 +97,7 @@ class ControladorMedicamento:
 
 
             elif opcao == 2:
-                self.__medicamentos_DAO.remove(medicamento)
+                self.__medicamentos_DAO.remove(medicamento.nome)
                 self.__tela_medicamento.mostra_msg("Medicamento removido com sucesso.")
 
             elif opcao == 0:
@@ -110,7 +110,7 @@ class ControladorMedicamento:
             self.__tela_medicamento.mostra_msg("Medicamento não encontrado.")
 
     def lista_medicamentos(self):
-        if len(self.__medicamentos) == 0:
+        if len(self.__medicamentos_DAO.get_all()) == 0:
             self.__tela_medicamento.mostra_msg("Não há nenhum medicamento registrado no sistema")
             return
         self.__tela_medicamento.mostra_lista_medicamentos(self.__medicamentos_DAO.get_all())

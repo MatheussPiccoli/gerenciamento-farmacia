@@ -12,44 +12,15 @@ class ControladorEstoque:
         self.__controlador_sistema = controlador_sistema
         self.__tela_estoque = TelaEstoque()
 
-    def cria_estoque_inicial(self):
-        medicamentos = self.__controlador_sistema.controlador_medicamento.get_all_medicamentos()
-
-        if len(medicamentos) > 0:
-            estoque = self.__estoque_dao.get_estoque()
-            paracetamol_generico = next((m for m in medicamentos if m.nome == "Paracetamol" and m.fabricante == "Genérico"), None)
-            ibuprofeno_ems = next((m for m in medicamentos if m.nome == "Ibuprofeno" and m.fabricante == "EMS"), None)
-            
-            if paracetamol_generico:
-                estoque.adicionar_lote(
-                    medicamento=paracetamol_generico,
-                    lote="P12345",
-                    validade=date(2026, 12, 31), 
-                    quantidade=500
-                )
-                estoque.adicionar_lote(
-                    medicamento=paracetamol_generico,
-                    lote="P67890",
-                    validade=date(2025, 6, 30), 
-                    quantidade=200
-                )
-            if ibuprofeno_ems:
-                estoque.adicionar_lote(
-                    medicamento=ibuprofeno_ems,
-                    lote="I12345",
-                    validade=date(2027, 1, 15),
-                    quantidade=300
-                )
-            self.__estoque_dao.update(estoque)
-            self.__tela_estoque.mostra_mensagem("Estoque inicial carregado.") 
-
     def listar_estoque(self):
         estoque = self.__estoque_dao.get_estoque()
+        if estoque is None:
+            self.__tela_estoque.mostra_mensagem("Estoque não inicializado.")
+            return
         lotes = estoque.lotes
         if not lotes:
             self.__tela_estoque.mostra_mensagem("Estoque vazio.")
             return
-
         self.__tela_estoque.mostra_estoque(lotes)
 
     def aumentar_estoque(self):
@@ -61,16 +32,16 @@ class ControladorEstoque:
         except MedicamentoNaoEncontrado:
             self.__tela_estoque.mostra_mensagem("Medicamento não encontrado.")
             return
-
         dados = self.__tela_estoque.pega_dados_lote()
         if dados is None: 
             return
-
         if dados["quantidade"] <= 0:
             self.__tela_estoque.mostra_mensagem("A quantidade deve ser maior que zero.")
             return 
-
         estoque = self.__estoque_dao.get_estoque()
+        if estoque is None:
+            self.__tela_estoque.mostra_mensagem("Estoque não inicializado.")
+            return
         estoque.adicionar_lote(
             medicamento=medicamento,
             lote=dados["lote"],
@@ -78,7 +49,6 @@ class ControladorEstoque:
             quantidade=dados["quantidade"]
         )
         self.__estoque_dao.update(estoque)
-
         self.__tela_estoque.mostra_mensagem("Lote adicionado ao estoque com sucesso.")
 
     def abaixar_estoque(self):
@@ -90,36 +60,36 @@ class ControladorEstoque:
         except MedicamentoNaoEncontrado:
             self.__tela_estoque.mostra_mensagem("Medicamento não encontrado.")
             return
-
+        quantidade = self.__tela_estoque.pega_quantidade_para_baixa()
+        if quantidade is None or quantidade < 0:
+            self.__tela_estoque.mostra_mensagem("Quantidade para baixa deve ser um número positivo.")
+            return
+        estoque = self.__estoque_dao.get_estoque()
+        if estoque is None:
+            self.__tela_estoque.mostra_mensagem("Estoque não inicializado.")
+            return
         try:
-            quantidade = self.__tela_estoque.pega_quantidade_para_baixa()
-            if quantidade < 0: 
-                self.__tela_estoque.mostra_mensagem("Quantidade para baixa deve ser um número positivo.")
-                return
-            estoque = self.__estoque_dao.get_estoque()
             estoque.abaixar_estoque(medicamento, quantidade)
             self.__estoque_dao.update(estoque)
             self.__tela_estoque.mostra_mensagem("Estoque baixado com sucesso.")
         except EstoqueInsuficiente:
             self.__tela_estoque.mostra_mensagem("Estoque insuficiente para a quantidade solicitada.")
-            
         except ValueError:
             self.__tela_estoque.mostra_mensagem("Quantidade inválida.")
 
     def estoque_baixo(self):
         estoque = self.__estoque_dao.get_estoque()
-        lotes_baixos = estoque.estoque_baixo(limite=5) 
-
-        if not lotes_baixos:
-            self.__tela_estoque.mostra_mensagem("Nenhum medicamento com estoque baixo (quantidade abaixo de 5).")
+        if estoque is None:
+            self.__tela_estoque.mostra_mensagem("Estoque não inicializado.")
             return
-
-        self.__tela_estoque.mostra_mensagem("------ Medicamentos com Estoque Baixo ------")
-        for lote in lotes_baixos:
-            self.__tela_estoque.mostra_lote(lote)
+        lotes_baixos = estoque.estoque_baixo(limite=5)
+        self.__tela_estoque.mostra_estoque_baixo(lotes_baixos)
 
     def consultar_total_medicamento(self, medicamento: Medicamento) -> int:
         estoque = self.__estoque_dao.get_estoque()
+        if estoque is None:
+            self.__tela_estoque.mostra_mensagem("Estoque não inicializado.")
+            return 0
         return estoque.consultar_estoque(medicamento)
     
     def realizar_baixa_medicamento(self, medicamento: Medicamento, quantidade: int): 
@@ -129,29 +99,27 @@ class ControladorEstoque:
             raise ValueError("A quantidade deve ser um número inteiro positivo.")
             
         estoque = self.__estoque_dao.get_estoque()
+        if estoque is None:
+            self.__tela_estoque.mostra_mensagem("Estoque não inicializado.")
+            return
         estoque.abaixar_estoque(medicamento, quantidade)
         self.__estoque_dao.update(estoque)
 
     def lotes_vencidos(self):
         estoque = self.__estoque_dao.get_estoque()
-        lotes_vencidos = estoque.lotes_vencidos()
-        if not lotes_vencidos:
-            self.__tela_estoque.mostra_mensagem("Nenhum lote vencido encontrado.")
+        if estoque is None:
+            self.__tela_estoque.mostra_mensagem("Estoque não inicializado.")
             return
-
-        self.__tela_estoque.mostra_mensagem("------ Lotes Vencidos ------")
-        for lote in lotes_vencidos:
-            self.__tela_estoque.mostra_lote(lote)
+        lotes_vencidos = estoque.lotes_vencidos()
+        self.__tela_estoque.mostra_lotes_vencidos(lotes_vencidos)
 
     def lotes_proximos_vencimento(self):
         estoque = self.__estoque_dao.get_estoque()
-        lotes_proximos = estoque.lotes_proximos_vencimento(dias_limite=30)
-        if not lotes_proximos:
-            self.__tela_estoque.mostra_mensagem("Nenhum lote próximo ao vencimento encontrado.")
+        if estoque is None:
+            self.__tela_estoque.mostra_mensagem("Estoque não inicializado.")
             return
-        self.__tela_estoque.mostra_mensagem("------ Lotes Próximos ao Vencimento ------")
-        for lote in lotes_proximos:
-            self.__tela_estoque.mostra_lote(lote)
+        lotes_proximos = estoque.lotes_proximos_vencimento(dias_limite=30)
+        self.__tela_estoque.mostra_lotes_proximos(lotes_proximos)
 
     def retornar(self):
         self.__controlador_sistema.abre_tela()

@@ -10,17 +10,6 @@ class Controladorclientes():
         self.__clientes_DAO = ClienteDAO()
         self.__tela_cliente = TelaCliente()
         self.__controlador_sistema = controlador_sistema
-        self.cria_clientes_iniciais()
-
-    def cria_clientes_iniciais(self):
-        Cliente.contador_id = 0 
-        cliente1 = Cliente("Alice Silva", "11122233344", "48988887777")
-        cliente2 = Cliente("Bruno Costa", "55566677788", "48999990000")
-        cliente3 = Cliente("Carla Dias", "99988877766", "")
-
-        self.__clientes_DAO.add(cliente1)
-        self.__clientes_DAO.add(cliente2)
-        self.__clientes_DAO.add(cliente3)
 
     def pega_cliente_por_cpf(self, cpf: str):
         for cliente in self.__clientes_DAO.get_all():
@@ -110,7 +99,7 @@ class Controladorclientes():
             return
 
         if cliente is not None:
-            self.__clientes_DAO.remove(cliente)
+            self.__clientes_DAO.remove(cliente.cpf)
             self.__tela_cliente.mostra_mensagem("Cliente excluído com sucesso!")
             self.lista_clientes()
         else:
