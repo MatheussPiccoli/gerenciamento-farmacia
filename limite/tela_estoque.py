@@ -66,14 +66,18 @@ class TelaEstoque():
         window.close()
         return int(values['quantidade']) if event == 'OK' else None 
 
-    def mostra_estoque(self, lotes):
-        if not lotes:
+    def mostra_estoque(self, dados_lotes):
+        if not dados_lotes:
             sg.popup('Nenhum lote cadastrado no estoque.')
             return
-        linhas = []
-        for lote in lotes:
-            linhas.append(f"ID: {lote.medicamento.id} | Medicamento: {lote.medicamento.nome} | Lote: {lote.lote} | Validade: {lote.validade} | Quantidade: {lote.quantidade}")
-        window = sg.Window('Estoque', [[sg.Text('\n'.join(linhas))]])
+        headings = ["ID", "Medicamento", "Lote", "Validade", "Quantidade"]
+        table_data = [[lote['id'], lote['nome'], lote['lote'], str(lote['validade']), lote['quantidade']] for lote in dados_lotes]
+        layout = [
+            [sg.Text('Estoque', font=('Helvica', 16, 'bold'))],
+            [sg.Table(values=table_data, headings=headings, auto_size_columns=True, display_row_numbers=False, justification='center', num_rows=min(15, len(table_data)), font=('Consolas', 12), key='-TABLE-', enable_events=False)],
+            [sg.Button('OK')]
+        ]
+        window = sg.Window('Estoque', layout, resizable=True, finalize=True)
         window.read()
         window.close()
     

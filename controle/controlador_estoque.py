@@ -21,7 +21,16 @@ class ControladorEstoque:
         if not lotes:
             self.__tela_estoque.mostra_mensagem("Estoque vazio.")
             return
-        self.__tela_estoque.mostra_estoque(lotes)
+        dados_lotes = []
+        for lote in lotes:
+            dados_lotes.append({
+                "id": lote.medicamento.id,
+                "nome": lote.medicamento.nome,
+                "lote": lote.lote,
+                "validade": lote.validade,
+                "quantidade": lote.quantidade
+            })
+        self.__tela_estoque.mostra_estoque(dados_lotes)
 
     def aumentar_estoque(self):
         try:
