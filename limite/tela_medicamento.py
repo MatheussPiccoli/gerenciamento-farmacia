@@ -112,14 +112,13 @@ class TelaMedicamento():
         if not lista_medicamentos:
             sg.popup('Nenhum medicamento cadastrado.')
             return
-        linhas = []
-        for med in lista_medicamentos:
-            linhas.append(f"Nome: {med.nome} | Fabricante: {med.fabricante} | Preço: {med.preco}")
+        headings = ["Nome", "Fabricante", "Preço"]
+        table_data = [[med.nome, med.fabricante, med.preco] for med in lista_medicamentos]
         layout = [
-            [sg.Text('Lista de Medicamentos:')],
-            [sg.Multiline('\n'.join(linhas), size=(60, min(20, len(linhas))), disabled=True)],
+            [sg.Text('Lista de Medicamentos', font=('Helvica', 16, 'bold'))],
+            [sg.Table(values=table_data, headings=headings, auto_size_columns=True, display_row_numbers=False, justification='center', num_rows=min(15, len(table_data)), font=('Consolas', 12), key='-TABLE-', enable_events=False)],
             [sg.Button('OK')]
         ]
-        window = sg.Window('Medicamentos Cadastrados', layout)
+        window = sg.Window('Medicamentos Cadastrados', layout, resizable=True, finalize=True)
         window.read()
         window.close()

@@ -16,61 +16,47 @@ class ControladorVenda:
         self.__venda_DAO = VendaDAO()
         
     def registrar_venda(self):
-        itens_venda = []
-
+        itens_dados = []
         while True:
             self.__controlador_sistema.controlador_estoque.listar_estoque()
             dados_item = self.__tela_venda.pega_dados_item()
-
             if dados_item is None:
                 self.__tela_venda.mostra_mensagem("Operação de adicionar item cancelada.")
                 break
-
             try:
                 medicamento = self.__controlador_sistema.controlador_medicamento.pega_medicamento_por_nome(dados_item["nome"])
             except MedicamentoNaoEncontrado as erro:
                 self.__tela_venda.mostra_mensagem(erro.args[0])
                 continue
-
             quantidade_desejada = dados_item["quantidade"]
-
             estoque_disponivel = self.__controlador_sistema.controlador_estoque.consultar_total_medicamento(medicamento)
-
-
             if estoque_disponivel < quantidade_desejada:
                 self.__tela_venda.mostra_mensagem(f"Estoque insuficiente para {medicamento.nome}. Disponível: {estoque_disponivel}")
                 continue
-
             try:
-                item_venda = ItemVenda(medicamento=medicamento, quantidade=quantidade_desejada)
-                itens_venda.append(item_venda)
+                itens_dados.append({
+                    'medicamento': medicamento,
+                    'quantidade': quantidade_desejada
+                })
                 self.__controlador_sistema.controlador_estoque.realizar_baixa_medicamento(medicamento, quantidade_desejada)
                 self.__tela_venda.mostra_mensagem(f"Item '{medicamento.nome}' adicionado à venda e estoque baixado.")
-
             except (EstoqueInsuficiente, ValueError, TypeError) as e:
                 self.__tela_venda.mostra_mensagem(f"Erro ao adicionar item ou baixar estoque: {e}. Operação cancelada.")
                 return
-
             if not self.__tela_venda.continuar_venda():
                 break
-
-        if not itens_venda:
+        if not itens_dados:
             self.__tela_venda.mostra_mensagem("Nenhum item foi registrado na venda. Venda cancelada.")
             return
-
         try:
             self.__controlador_sistema.controlador_cliente.lista_clientes()
             cpf_cliente = self.__tela_venda.pega_cpf_cliente()
-            
             if not cpf_cliente:
                 self.__tela_venda.mostra_mensagem("CPF do cliente não fornecido. Venda cancelada.")
                 return
-            
             cliente = self.__controlador_sistema.controlador_cliente.pega_cliente_por_cpf(cpf_cliente)
-
             if not cliente:
                 raise ClienteNaoEncontrado("Cliente não encontrado com o CPF informado. Venda cancelada.")
-
         except ClienteNaoEncontrado as erro:
             self.__tela_venda.mostra_mensagem(erro.args[0])
             return
@@ -80,20 +66,15 @@ class ControladorVenda:
         except Exception as erro:
             self.__tela_venda.mostra_mensagem(f"Erro ao selecionar cliente: {erro}. Venda cancelada.")
             return
-
         try:
             self.__controlador_sistema.controlador_farmaceutico.lista_farmaceutico()
             cpf_farmaceutico = self.__tela_venda.pega_cpf_farmaceutico()
-
             if not cpf_farmaceutico:
                 self.__tela_venda.mostra_mensagem("CPF do farmacêutico não fornecido. Venda cancelada.")
                 return
-
             farmaceutico = self.__controlador_sistema.controlador_farmaceutico.pega_farmaceutico_por_cpf(cpf_farmaceutico)
-            
             if not farmaceutico:
                 raise FarmaceuticoNaoEncontrado("Farmacêutico não encontrado com o CPF informado. Venda cancelada.")
-
         except FarmaceuticoNaoEncontrado as erro:
             self.__tela_venda.mostra_mensagem(erro.args[0])
             return
@@ -103,14 +84,9 @@ class ControladorVenda:
         except Exception as e:
             self.__tela_venda.mostra_mensagem(f"Erro ao selecionar farmacêutico: {e}. Venda cancelada.")
             return
-
-        nova_venda = Venda(cliente=cliente, farmaceutico=farmaceutico, data=date.today())
-        for item in itens_venda:
-            nova_venda.adicionar_item(item)
-
+        nova_venda = Venda(cliente=cliente, farmaceutico=farmaceutico, data=date.today(), itens_dados=itens_dados)
         self.__venda_DAO.add(nova_venda)
         total = nova_venda.valor_total()
-
         self.__tela_venda.mostra_mensagem(f"Venda registrada com sucesso! ID da Venda: {nova_venda.id} | Total: R$ {total:.2f}")
 
     def listar_vendas(self):

@@ -86,7 +86,7 @@ class TelaEstoque():
         sg.popup(msg, title='Lote')
 
     def mostra_mensagem(self, msg):
-        print(msg)
+        pass
 
     def mostra_estoque_baixo(self, lotes_baixos):
         if not lotes_baixos:

@@ -13,7 +13,6 @@ class ControladorFarmaceutico():
     
     def pega_farmaceutico_por_cpf(self, cpf: str):
         for farmaceutico in self.__farmaceutico_DAO.get_all():
-            print(farmaceutico.cpf)
             if farmaceutico.cpf == cpf:
                 return farmaceutico
         raise FarmaceuticoNaoEncontrado(f"farmaceutico com CPF '{cpf}' não encontrado.") 
