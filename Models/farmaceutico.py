@@ -18,13 +18,6 @@ class Farmaceutico(Pessoa):
     def salario(self, salario):
         self.__salario = salario
 
-    @property
-    def id(self):
-        return super().id
-
-    @id.setter
-    def id(self, id):
-        super().id = id 
 
     def registrar_venda(self, venda: Venda):
         if venda not in self.__vendas and isinstance(venda, Venda):

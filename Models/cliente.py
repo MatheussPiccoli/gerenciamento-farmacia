@@ -17,11 +17,3 @@ class Cliente(Pessoa):
     @telefone.setter
     def telefone(self, telefone):
         self.__telefone = telefone
-
-    @property
-    def id(self):
-        return self.__id
-
-    @id.setter
-    def id(self, id):
-        self.__id = id
